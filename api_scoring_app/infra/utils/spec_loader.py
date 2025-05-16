@@ -1,5 +1,9 @@
+import os
+import yaml
+import json
+
 from typing import Any
-from api_scoring_app.core import BaseSpecLoader
+from api_scoring_app.core import BaseSpecLoader, SpecLoaderException
 
 class LocalSpecLoader(BaseSpecLoader):
     """Load OpenAPI specification from a local file."""
@@ -8,7 +12,26 @@ class LocalSpecLoader(BaseSpecLoader):
         self.spec_source = spec_path
     
     def load(self) -> dict[str, Any]:
-        pass
+        if not os.path.exists(self.spec_source):
+            raise SpecLoaderException(f"File not found: {self.spec_source}")
+        
+        extension = os.path.splitext(self.spec_source)[1]
+        if extension == '.yaml':
+            try:
+                with open(self.spec_source, 'r') as file:
+                    yaml_data = yaml.safe_load(file)
+                return yaml_data 
+            except Exception as e:
+                raise SpecLoaderException(f"Error loading spec from local file: {e}")
+        elif extension == '.json':
+            try:
+                with open(self.spec_source, 'r') as file:
+                    json_data = json.load(file)
+                return json_data
+            except Exception as e:
+                raise SpecLoaderException(f"Error loading spec from local file: {e}")
+        else:
+            raise SpecLoaderException(f"Unsupported file extension, should be .yaml or .json")
 
 class URLSpecLoader(BaseSpecLoader):
     """Load OpenAPI specification from a URL."""
