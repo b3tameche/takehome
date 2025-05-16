@@ -18,3 +18,13 @@ class URLSpecLoader(BaseSpecLoader):
 
     def load(self) -> dict[str, Any]:
         pass
+
+class SpecLoaderFactory:
+    """Factory for creating spec loaders."""
+
+    @staticmethod
+    def create_loader(spec_source: str) -> BaseSpecLoader:
+        if spec_source.strip().startswith(('http', 'https')):
+            return URLSpecLoader(spec_source)
+        else:
+            return LocalSpecLoader(spec_source)
