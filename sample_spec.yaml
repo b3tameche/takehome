@@ -3,3 +3,28 @@ info:
   title: Sample
   version: 1.0.0
   description: El sample
+servers:
+  - url: https://api.a.che
+    description: The sample API
+paths:
+  /sample:
+    get:
+      summary: Get a sample resource
+      responses:
+        '200':
+          description: A sample response
+        '404':
+          description: Not found
+components:
+  schemas:
+    Sample:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number

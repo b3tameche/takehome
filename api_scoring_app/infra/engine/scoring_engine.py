@@ -20,4 +20,4 @@ class ScoringEngine:
         self.subscorers.append(subscorer)
 
     def validate_spec(self, spec: dict[str, Any]) -> bool:
-        pass
+        self.validator.validate(spec)
