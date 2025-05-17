@@ -2,8 +2,7 @@ from typing import Any
 from dataclasses import dataclass, field
 
 from api_scoring_app.core import IScorer, IValidator
-from api_scoring_app.infra.validators.openapi_validator import OpenAPIValidator
-
+from api_scoring_app.infra.validators.prance_validator import PranceValidator
 @dataclass
 class ScoringEngine:
     """
@@ -11,7 +10,7 @@ class ScoringEngine:
     """
 
     subscorers: list[IScorer] = field(default_factory=list)
-    validator: IValidator = field(default_factory=OpenAPIValidator)
+    validator: IValidator = field(default_factory=PranceValidator)
 
     def score_spec(self, spec: dict[str, Any]) -> int:
         pass

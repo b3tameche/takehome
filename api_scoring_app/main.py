@@ -3,7 +3,8 @@ from typing import Optional
 
 from api_scoring_app.infra import ScoringEngine
 from api_scoring_app.infra.utils.spec_loader import SpecLoaderFactory
-from api_scoring_app.infra.validators.prance_validator import PranceValidator
+from api_scoring_app.infra.validators import PranceValidator
+
 @click.command()
 @click.argument("spec_source", type=click.Path(exists=True, dir_okay=False), required=True)
 @click.option(
