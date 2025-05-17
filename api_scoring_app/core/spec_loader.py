@@ -1,10 +1,8 @@
-from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Protocol
 
-class BaseSpecLoader(ABC):
-    """Abstract base class for loading OpenAPI specification."""
+class ISpecLoader(Protocol):
+    """Interface for loading OpenAPI specification."""
 
-    @abstractmethod
     def load(self) -> dict[str, Any]:
         pass
 

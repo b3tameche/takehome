@@ -1,14 +1,19 @@
 from typing import Any
+from dataclasses import dataclass, field
 
-from api_scoring_app.core import BaseSubscorer
+from api_scoring_app.core import IScorer
 
-class SchemaSubscorer(BaseSubscorer):
+@dataclass
+class SchemaSubscorer:
     """
-    Schema & Types validator for OpenAPI specification.
+    Schema & Types subscorer for OpenAPI specification.
     """
 
-    def __init__(self, spec: dict[str, Any]) -> None:
-        self.spec = spec
+    spec: dict[str, Any] = field(default_factory=dict)
+    subscorers: list[IScorer] = field(default_factory=list)
+
+    def score_spec(self) -> int:
+        pass
 
     def validate(self) -> bool:
         pass

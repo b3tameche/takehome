@@ -1,14 +1,13 @@
-from typing import Any
-from abc import ABC, abstractmethod
+from typing import Any, Protocol
+from dataclasses import dataclass
 
-class BaseScoringEngine(ABC):
+from api_scoring_app.core import IScorer
+
+@dataclass
+class IScoringEngine(IScorer, Protocol):
     """
-    Abstract base class for scoring engine for OpenAPI specification.
+    Interface for main top-level scoring engine.
     """
 
-    def __init__(self, spec: dict[str, Any]) -> None:
-        self.spec = spec
-    
-    @abstractmethod
-    def score_spec(self) -> int:
+    def validate_spec(self, spec: dict[str, Any]) -> bool:
         pass

@@ -1,15 +1,23 @@
 from typing import Any
+from dataclasses import dataclass, field
 
-from api_scoring_app.core import BaseScoringEngine
+from api_scoring_app.core import IScorer, IValidator
+from api_scoring_app.infra.validators.openapi_validator import OpenAPIValidator
 
-class ScoringEngine(BaseScoringEngine):
+@dataclass
+class ScoringEngine:
     """
     Default scoring engine for OpenAPI specification.
     """
 
-    def __init__(self, spec: dict[str, Any]) -> None:
-        print(f"From DefaultAPIScorer: {spec}")
-        self.spec = spec
+    subscorers: list[IScorer] = field(default_factory=list)
+    validator: IValidator = field(default_factory=OpenAPIValidator)
 
-    def score_spec(self) -> int:
+    def score_spec(self, spec: dict[str, Any]) -> int:
+        pass
+
+    def add_subscorer(self, subscorer: IScorer) -> None:
+        self.subscorers.append(subscorer)
+
+    def validate_spec(self, spec: dict[str, Any]) -> bool:
         pass

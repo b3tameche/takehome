@@ -21,7 +21,7 @@ def main(spec_source: str, format: str, output_file: Optional[str]):
     print(f"Output Format: {format}")
     print(f"Output File: {output_file}")
     
-    api_scorer = ScoringEngine(spec_source)
+    scoring_engine = ScoringEngine(spec_source)
     
     pass
 

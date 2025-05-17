@@ -4,10 +4,10 @@ import json
 import requests
 
 from typing import Any
-from api_scoring_app.core import BaseSpecLoader, SpecLoaderException
+from api_scoring_app.core import ISpecLoader, SpecLoaderException
 from api_scoring_app.infra.utils.request_builder import RequestBuilder
 
-class LocalSpecLoader(BaseSpecLoader):
+class LocalSpecLoader:
     """Load OpenAPI specification from a local file."""
 
     def __init__(self, spec_path: str):
@@ -35,7 +35,7 @@ class LocalSpecLoader(BaseSpecLoader):
         else:
             raise SpecLoaderException(f"Unsupported file extension, should be .yaml or .json")
 
-class URLSpecLoader(BaseSpecLoader):
+class URLSpecLoader:
     """Load OpenAPI specification from a URL."""
 
     def __init__(self, spec_url: str):
@@ -74,7 +74,7 @@ class SpecLoaderFactory:
     """Factory for creating spec loaders."""
 
     @staticmethod
-    def create_loader(spec_source: str) -> BaseSpecLoader:
+    def create_loader(spec_source: str) -> ISpecLoader:
         if spec_source.strip().startswith(('http', 'https')):
             return URLSpecLoader(spec_source)
         else:

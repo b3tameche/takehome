@@ -1,14 +1,15 @@
-from typing import Any
-from abc import ABC, abstractmethod
+from __future__ import annotations
 
-class BaseSubscorer(ABC):
+from typing import Protocol, Any
+
+class IScorer(Protocol):
     """
-    Base class for all subscorers.
+    Base interface for all subscorers.
+    Main Scoring Engine is considered as a subscorer, too, following the Composite pattern.
     """
 
-    def __init__(self, spec: dict[str, Any]) -> None:
-        self.spec = spec
+    def score_spec(self, spec: dict[str, Any]) -> int:
+        pass
 
-    @abstractmethod
-    def validate(self) -> bool:
+    def add_subscorer(self, subscorer: IScorer) -> None:
         pass
