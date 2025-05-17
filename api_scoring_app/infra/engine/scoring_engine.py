@@ -1,8 +1,8 @@
 from typing import Any
 
-from api_scoring_app.core import BaseAPIScorer
+from api_scoring_app.core import BaseScoringEngine
 
-class DefaultAPIScorer(BaseAPIScorer):
+class ScoringEngine(BaseScoringEngine):
     """
     Default scoring engine for OpenAPI specification.
     """

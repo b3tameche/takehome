@@ -1,7 +1,7 @@
 import click
 from typing import Optional
 
-from api_scoring_app.infra import DefaultAPIScorer
+from api_scoring_app.infra import ScoringEngine
 
 @click.command()
 @click.argument("spec_source", type=click.Path(exists=True, dir_okay=False), required=True)
@@ -21,7 +21,7 @@ def main(spec_source: str, format: str, output_file: Optional[str]):
     print(f"Output Format: {format}")
     print(f"Output File: {output_file}")
     
-    api_scorer = DefaultAPIScorer(spec_source)
+    api_scorer = ScoringEngine(spec_source)
     
     pass
 

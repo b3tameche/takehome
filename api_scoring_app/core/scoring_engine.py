@@ -1,14 +1,14 @@
 from typing import Any
 from abc import ABC, abstractmethod
 
-class BaseValidator(ABC):
+class BaseScoringEngine(ABC):
     """
-    Base class for all validators.
+    Abstract base class for scoring engine for OpenAPI specification.
     """
 
     def __init__(self, spec: dict[str, Any]) -> None:
         self.spec = spec
-
+    
     @abstractmethod
-    def validate(self) -> bool:
+    def score_spec(self) -> int:
         pass

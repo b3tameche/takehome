@@ -1,3 +1,3 @@
-from api_scoring_app.infra.engine.scorer import DefaultAPIScorer
+from api_scoring_app.infra.engine.scoring_engine import ScoringEngine
 
-__all__ = ["DefaultAPIScorer"]
+__all__ = ["ScoringEngine"]

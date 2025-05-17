@@ -1,14 +1,14 @@
 from typing import Any
 from abc import ABC, abstractmethod
 
-class BaseAPIScorer(ABC):
+class BaseSubscorer(ABC):
     """
-    Abstract base class for scoring engine for OpenAPI specification.
+    Base class for all subscorers.
     """
 
     def __init__(self, spec: dict[str, Any]) -> None:
         self.spec = spec
-    
+
     @abstractmethod
-    def score_spec(self) -> int:
+    def validate(self) -> bool:
         pass

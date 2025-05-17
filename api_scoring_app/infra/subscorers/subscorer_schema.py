@@ -1,8 +1,8 @@
 from typing import Any
 
-from api_scoring_app.core import BaseValidator
+from api_scoring_app.core import BaseSubscorer
 
-class SchemaValidator(BaseValidator):
+class SchemaSubscorer(BaseSubscorer):
     """
     Schema & Types validator for OpenAPI specification.
     """

@@ -1,5 +1,5 @@
-from api_scoring_app.infra.engine import DefaultAPIScorer
+from api_scoring_app.infra.engine import ScoringEngine
 from api_scoring_app.infra.utils import LocalSpecLoader, URLSpecLoader
-from api_scoring_app.infra.validators import SchemaValidator
+from api_scoring_app.infra.subscorers import SchemaSubscorer
 
-__all__ = ["DefaultAPIScorer", "LocalSpecLoader", "URLSpecLoader", "SchemaValidator"]
+__all__ = ["ScoringEngine", "LocalSpecLoader", "URLSpecLoader", "SchemaSubscorer"]
