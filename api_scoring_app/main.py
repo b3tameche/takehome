@@ -4,10 +4,9 @@ import json
 from pprint import pprint
 from typing import Optional
 
-from api_scoring_app.infra import ScoringEngine
 from api_scoring_app.infra.utils.spec_loader import SpecLoaderFactory
-from api_scoring_app.infra.validators import PranceValidator
-from api_scoring_app.infra.engine.custom_parser import CustomParser
+from api_scoring_app.infra.validators import PydanticValidator
+from api_scoring_app.infra.subscorers.subscorer_schema import SchemaSubscorer
 
 @click.command()
 @click.argument("spec_source", type=click.Path(exists=True, dir_okay=False), required=True)
@@ -33,15 +32,18 @@ def main(spec_source: str, format: str, output_file: Optional[str]):
 
     # Validate the spec
     spec_string = json.dumps(spec)
-    validation_result = PranceValidator(spec_string).validate()
+    validation_result = PydanticValidator(spec_string).validate()
 
     if not validation_result.is_valid():
-        pprint(validation_result.errors)
+        for each in validation_result.errors:
+            print(each)
         return
-
-    # # Score the spec
-    # scoring_engine = ScoringEngine()
-    # scoring_engine.score_spec(spec)
     
-    pass
+    spec_model = validation_result.specification
+
+    # Score the spec
+    schema_subscorer = SchemaSubscorer()
+    report = schema_subscorer.score_spec(spec_model)
+
+    pprint(report)
 

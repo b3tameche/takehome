@@ -1,8 +1,8 @@
 from typing import Any
 from dataclasses import dataclass, field
 
-from api_scoring_app.core import IScorer, IValidator
-from api_scoring_app.infra.validators.prance_validator import PranceValidator
+from api_scoring_app.core import IScorer
+
 @dataclass
 class ScoringEngine:
     """

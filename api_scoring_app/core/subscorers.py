@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import Protocol, Any
+from typing import Protocol
+
+from openapi_pydantic import OpenAPI
 
 class IScorer(Protocol):
     """
@@ -8,7 +10,7 @@ class IScorer(Protocol):
     Main Scoring Engine is considered as a subscorer, too, following the Composite pattern.
     """
 
-    def score_spec(self, spec: dict[str, Any]) -> int:
+    def score_spec(self, spec: OpenAPI) -> int:
         pass
 
     def add_subscorer(self, subscorer: IScorer) -> None:
