@@ -6,7 +6,7 @@ from typing import Optional
 
 from api_scoring_app.infra.utils.spec_loader import SpecLoaderFactory
 from api_scoring_app.infra.validators import PydanticValidator
-from api_scoring_app.infra.subscorers import SchemaSubscorer, DescriptionSubscorer
+from api_scoring_app.infra.subscorers import SchemaSubscorer, DescriptionSubscorer, PathsSubscorer
 from openapi_pydantic import PathItem, Operation, Parameter, RequestBody, Response
 
 @click.command()
@@ -48,11 +48,17 @@ def main(spec_source: str, format: str, output_file: Optional[str]):
     # Create DescriptionSubscorer with specific types to check
     description_types = (PathItem, Operation, Parameter, RequestBody, Response)
     description_report = DescriptionSubscorer(types_to_check=description_types).score_spec(spec_model)
+    
+    # Score paths and operations
+    paths_report = PathsSubscorer().score_spec(spec_model)
 
-    # Print both reports
+    # Print reports
     print("Schema Report:")
     pprint(schema_report)
-
+    
     print("\nDescription Report:")
     pprint(description_report)
+    
+    print("\nPaths Report:")
+    pprint(paths_report)
 

@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: Sample
+  title: Sample API with Path Issues
   version: 0.0.1
 paths:
   /users:
@@ -14,6 +14,62 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+    post:
+      summary: Create a new user
+      responses:
+        '201':
+          description: User created successfully
+
+  # overlapping
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      responses:
+        '200':
+          description: User details
+  /users/{userId}:
+    get:
+      summary: Get user by user ID
+      responses:
+        '200':
+          description: User details
+  /{teamId}/users:
+    get:
+      summary: Get users by team ID
+      responses:
+        '200':
+          description: Users details
+
+  # CRUD convention violation - GET for creation
+  /users/create:
+    get:
+      summary: Create a user (wrong HTTP method)
+      responses:
+        '200':
+          description: User created
+
+  # CRUD convention violation - using POST for retrieval
+  /search:
+    post:
+      summary: Search for users
+      responses:
+        '200':
+          description: Search results
+
+  # inconsistent naming
+  /user_profiles:
+    get:
+      summary: Get all user profiles
+      responses:
+        '200':
+          description: List of user profiles
+  /user-settings:
+    get:
+      summary: Get user settings
+      responses:
+        '200':
+          description: User settings
+
 components:
   schemas:
     User:

@@ -47,6 +47,14 @@ class IssueSeverity(Enum):
     HIGH = "high"
     CRITICAL = "critical"
 
+class NamingConvention(Enum):
+    """
+    Naming convention for the path.
+    """
+
+    KEBAB = "kebab-case"
+    SNAKE = "snake_case"
+
 @dataclass
 class Issue:
     """
@@ -54,8 +62,8 @@ class Issue:
     """
 
     message: str
-    path: str
     severity: IssueSeverity
+    path: Optional[str] = field(default=None)
     suggestion: Optional[str] = field(default=None)
 
 @dataclass
