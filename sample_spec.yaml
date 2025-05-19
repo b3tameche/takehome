@@ -1,134 +1,135 @@
 openapi: 3.1.0
 info:
-  title: Sample API with Path Issues
-  version: 0.0.1
+  title: Book Store API
+  description: A simple API for managing a book store inventory
+  version: '1.0.0'
+  contact:
+    name: API Support
+    email: support@bookstore.example
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.bookstore.example/v1
+    description: Production server
+  - url: https://dev-api.bookstore.example/v1
+    description: Development server
+
 paths:
-  /users:
+  /books:
     get:
-      summary: Get all users
-      requestBody:
-        required: true
-        content:
-          application/json:
-            examples:
-              example1:
-                value:
-                  name: John Doe
-                  email: john.doe@example.com
-            schema:
-              type: object
+      summary: List all books
+      description: Returns a list of books from the inventory
+      operationId: listBooks
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: Maximum number of books to return
+        - name: genre
+          in: query
+          schema:
+            type: string
+          description: Filter books by genre
       responses:
         '200':
-          description: List of users
+          description: Successful operation
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: true
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+        '400':
+          $ref: '#/components/responses/BadRequest'
     post:
-      summary: Create a new user
+      summary: Add a new book
+      operationId: addBook
+      requestBody:
+        description: Book object to be added to the inventory
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewBook'
       responses:
         '201':
-          description: User created successfully
+          description: Book created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          $ref: '#/components/responses/BadRequest'
 
-  # overlapping
-  /users/{id}:
+  /books/{bookId}:
     get:
-      summary: Get user by ID
+      summary: Get book by ID
+      operationId: getBookById
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the book to retrieve
       responses:
         '200':
-          description: User details
-  /users/{userId}:
-    get:
-      summary: Get user by user ID
-      responses:
-        '200':
-          description: User details
-  /{teamId}/users:
-    get:
-      summary: Get users by team ID
-      responses:
-        '200':
-          description: Users details
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
-  # CRUD convention violation - GET for creation
-  /users/create:
-    get:
-      summary: Create a user (wrong HTTP method)
-      responses:
-        '200':
-          description: User created
-
-  # CRUD convention violation - using POST for retrieval
-  /search:
-    post:
-      summary: Search for users
-      responses:
-        '200':
-          description: Search results
-
-  # inconsistent naming
-  /user_profiles:
-    get:
-      summary: Get all user profiles
-      responses:
-        '200':
-          description: List of user profiles
-  /user-settings:
-    get:
-      summary: Get user settings
-      responses:
-        '200':
-          description: User settings
-  /security:
-    get:
-      summary: Get security
-      security:
-        - apiKey: []
 components:
-  securitySchemes:
-    apiKey:
-      type: apiKey
-      name: apiKey
-      in: header
-    oauth2:
-      type: oauth2
-      flows:
-        clientCredentials:
-      #     tokenUrl: https://api.example.com/token
-      #     scopes:
-      #       read: Read access
   schemas:
-    User:
+    Book:
       type: object
+      required:
+        - id
+        - title
+        - author
       properties:
         id:
-          type: integer
-        name:
           type: string
-        address:
-          $ref: '#/components/schemas/Address'
-    Address:
+          format: uuid
+        title:
+          type: string
+        author:
+          type: string
+        publishedDate:
+          type: string
+          format: date
+        genre:
+          type: string
+        price:
+          type: number
+          format: float
+    NewBook:
       type: object
+      required:
+        - title
+        - author
       properties:
-        street:
+        title:
           type: string
-        city:
+        author:
           type: string
-        country:
-          $ref: '#/components/schemas/Country'
-    Country:
-      type: object
-      properties:
-        code:
+        publishedDate:
           type: string
-        name:
+          format: date
+        genre:
           type: string
-security:
-  - something:
-    - read
-    - write
-  - anything:
-    - read
-    - write
-
+        price:
+          type: number
+          format: float
+  responses:
+    BadRequest:
+      description: Bad request
+    NotFound:
+      description: Resource not found
