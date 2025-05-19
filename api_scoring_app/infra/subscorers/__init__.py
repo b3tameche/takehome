@@ -3,5 +3,6 @@ from api_scoring_app.infra.subscorers.subscorer_description import DescriptionSu
 from api_scoring_app.infra.subscorers.subscorer_paths import PathsSubscorer
 from api_scoring_app.infra.subscorers.subscorer_response_codes import ResponseCodesSubscorer
 from api_scoring_app.infra.subscorers.subscorer_examples import ExamplesSubscorer
+from api_scoring_app.infra.subscorers.subscorer_security import SecuritySubscorer
 
-__all__ = ["SchemaSubscorer", "DescriptionSubscorer", "PathsSubscorer", "ResponseCodesSubscorer", "ExamplesSubscorer"]
+__all__ = ["SchemaSubscorer", "DescriptionSubscorer", "PathsSubscorer", "ResponseCodesSubscorer", "ExamplesSubscorer", "SecuritySubscorer"]

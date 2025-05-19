@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 from enum import Enum
 
-from openapi_pydantic import OpenAPI
+from openapi_pydantic import OpenAPI, SecurityRequirement
 
 @dataclass
 class ValidationError(Exception):
@@ -14,7 +14,7 @@ class ValidationError(Exception):
     message: str
 
     def __str__(self) -> str:
-        path_as_string = ' -> '.join(self.path)
+        path_as_string = ' -> '.join(map(str, self.path))
 
         return f"{path_as_string}: {self.message}"
 
@@ -42,10 +42,11 @@ class IssueSeverity(Enum):
     Severity of the issue.
     """
 
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    CRITICAL = "critical"
+    LOW = 0.98
+    MEDIUM = 0.8
+    HIGH = 0.6
+    CRITICAL = 0.3
+    ZERO = 0.0
 
 class NamingConvention(Enum):
     """
@@ -77,3 +78,42 @@ class ScoringReport:
 
     def add_issue(self, issue: Issue) -> None:
         self.issues.append(issue)
+        self._update_weight(issue.severity.value)
+
+    def bulk_add_issues(self, issues: list[Issue], severity: IssueSeverity) -> None:
+        self.issues.extend(issues)
+        self._update_weight(severity.value)
+
+    def _update_weight(self, multiplier: float) -> None:
+        self.weight *= multiplier
+
+class WrappedSecurityRequirement:
+    """
+    Wrapper class for `schema` + `path`.
+    """
+
+    def __init__(self, name: str, path: list[str]):
+        self.name = name
+        self.path = path
+    
+    def __str__(self) -> str:
+        return f"{self.name}: {self.path}"
+    
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, WrappedSecurityRequirement):
+            return False
+        
+        return self.name == other.name
+
+@dataclass
+class MissingFieldError:
+    """
+    Wrapper for security scheme error indicating missing fields for a given object
+    """
+
+    path: list[str]
+    parent: str
+    missing_fields: list[str]
+
+    def __str__(self) -> str:
+        return f"{self.parent} missing fields: {self.missing_fields}"

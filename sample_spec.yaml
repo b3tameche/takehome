@@ -80,8 +80,24 @@ paths:
       responses:
         '200':
           description: User settings
-
+  /security:
+    get:
+      summary: Get security
+      security:
+        - apiKey: []
 components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      name: apiKey
+      in: header
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+      #     tokenUrl: https://api.example.com/token
+      #     scopes:
+      #       read: Read access
   schemas:
     User:
       type: object
@@ -108,3 +124,11 @@ components:
           type: string
         name:
           type: string
+security:
+  - something:
+    - read
+    - write
+  - anything:
+    - read
+    - write
+
