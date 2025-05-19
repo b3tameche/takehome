@@ -5,8 +5,9 @@ from pprint import pprint
 from typing import Optional
 
 from api_scoring_app.infra.utils.spec_loader import SpecLoaderFactory
+from api_scoring_app.infra.utils.spec_loader import SpecLoaderException
 from api_scoring_app.infra.validators import PydanticValidator
-from api_scoring_app.infra.subscorers import SchemaSubscorer, DescriptionSubscorer, PathsSubscorer
+from api_scoring_app.infra.subscorers import SchemaSubscorer, DescriptionSubscorer, PathsSubscorer, ResponseCodesSubscorer
 from openapi_pydantic import PathItem, Operation, Parameter, RequestBody, Response
 
 @click.command()
@@ -28,8 +29,12 @@ def main(spec_source: str, format: str, output_file: Optional[str]):
     # print(f"Output File: {output_file}")
 
     # Load the spec
-    spec_loader = SpecLoaderFactory.create_loader(spec_source)
-    spec = spec_loader.load()
+    try:
+        spec_loader = SpecLoaderFactory.create_loader(spec_source)
+        spec = spec_loader.load()
+    except SpecLoaderException as e:
+        print(f"Error loading spec: {e}")
+        return
 
     # Validate the spec
     spec_string = json.dumps(spec)
@@ -51,6 +56,9 @@ def main(spec_source: str, format: str, output_file: Optional[str]):
     
     # Score paths and operations
     paths_report = PathsSubscorer().score_spec(spec_model)
+    
+    # Score response codes
+    response_codes_report = ResponseCodesSubscorer().score_spec(spec_model)
 
     # Print reports
     print("Schema Report:")
@@ -61,4 +69,7 @@ def main(spec_source: str, format: str, output_file: Optional[str]):
     
     print("\nPaths Report:")
     pprint(paths_report)
+    
+    print("\nResponse Codes Report:")
+    pprint(response_codes_report)
 
