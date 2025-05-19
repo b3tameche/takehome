@@ -6,6 +6,17 @@ paths:
   /users:
     get:
       summary: Get all users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            examples:
+              example1:
+                value:
+                  name: John Doe
+                  email: john.doe@example.com
+            schema:
+              type: object
       responses:
         '200':
           description: List of users

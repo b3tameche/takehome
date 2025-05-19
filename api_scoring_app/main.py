@@ -7,7 +7,7 @@ from typing import Optional
 from api_scoring_app.infra.utils.spec_loader import SpecLoaderFactory
 from api_scoring_app.infra.utils.spec_loader import SpecLoaderException
 from api_scoring_app.infra.validators import PydanticValidator
-from api_scoring_app.infra.subscorers import SchemaSubscorer, DescriptionSubscorer, PathsSubscorer, ResponseCodesSubscorer
+from api_scoring_app.infra.subscorers import SchemaSubscorer, DescriptionSubscorer, PathsSubscorer, ResponseCodesSubscorer, ExamplesSubscorer
 from openapi_pydantic import PathItem, Operation, Parameter, RequestBody, Response
 
 @click.command()
@@ -59,6 +59,9 @@ def main(spec_source: str, format: str, output_file: Optional[str]):
     
     # Score response codes
     response_codes_report = ResponseCodesSubscorer().score_spec(spec_model)
+    
+    # Score examples and samples
+    examples_report = ExamplesSubscorer().score_spec(spec_model)
 
     # Print reports
     print("Schema Report:")
@@ -72,4 +75,7 @@ def main(spec_source: str, format: str, output_file: Optional[str]):
     
     print("\nResponse Codes Report:")
     pprint(response_codes_report)
+    
+    print("\nExamples Report:")
+    pprint(examples_report)
 
