@@ -7,7 +7,7 @@ from typing import Optional
 from api_scoring_app.infra.utils.spec_loader import SpecLoaderFactory
 from api_scoring_app.infra.utils.spec_loader import SpecLoaderException
 from api_scoring_app.infra.validators import PydanticValidator
-from api_scoring_app.infra.subscorers import SchemaSubscorer, DescriptionSubscorer, PathsSubscorer, ResponseCodesSubscorer, ExamplesSubscorer, SecuritySubscorer
+from api_scoring_app.infra.subscorers import SchemaSubscorer, DescriptionSubscorer, PathsSubscorer, ResponseCodesSubscorer, ExamplesSubscorer, SecuritySubscorer, MiscSubscorer
 from openapi_pydantic import PathItem, Operation, Parameter, RequestBody, Response
 
 @click.command()
@@ -65,23 +65,29 @@ def main(spec_source: str, format: str, output_file: Optional[str]):
     
     # Score security
     security_report = SecuritySubscorer().score_spec(spec_model)
+    
+    # Score miscellaneous best practices
+    misc_report = MiscSubscorer().score_spec(spec_model)
 
-    # Print reports
-    print("Schema Report:")
-    pprint(schema_report)
+    # # Print reports
+    # print("Schema Report:")
+    # pprint(schema_report)
     
-    print("\nDescription Report:")
-    pprint(description_report)
+    # print("\nDescription Report:")
+    # pprint(description_report)
     
-    print("\nPaths Report:")
-    pprint(paths_report)
+    # print("\nPaths Report:")
+    # pprint(paths_report)
     
-    print("\nResponse Codes Report:")
-    pprint(response_codes_report)
+    # print("\nResponse Codes Report:")
+    # pprint(response_codes_report)
     
-    print("\nExamples Report:")
-    pprint(examples_report)
+    # print("\nExamples Report:")
+    # pprint(examples_report)
     
-    print("\nSecurity Report:")
-    pprint(security_report)
+    # print("\nSecurity Report:")
+    # pprint(security_report)
+    
+    print("\nMiscellaneous Best Practices Report:")
+    pprint(misc_report)
 

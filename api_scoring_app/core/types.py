@@ -105,6 +105,26 @@ class WrappedSecurityRequirement:
         
         return self.name == other.name
 
+class WrappedTag:
+    """
+    Wrapper class for tag `name` + `path`.
+    """
+
+    def __init__(self, name: str, path: list[str]):
+        self.name = name
+        self.path = path
+    
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, WrappedTag):
+            return False
+        
+        return self.name == other.name
+    
+    def __str__(self) -> str:
+        path_as_str = ' -> '.join(self.path)
+        return f"{path_as_str}: {self.name}"
+
+
 @dataclass
 class MissingFieldError:
     """
