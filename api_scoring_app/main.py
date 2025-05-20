@@ -1,5 +1,4 @@
 import click
-import json
 
 from pprint import pprint
 from typing import Optional
@@ -7,8 +6,9 @@ from typing import Optional
 from api_scoring_app.infra.utils.spec_loader import SpecLoaderFactory
 from api_scoring_app.infra.utils.spec_loader import SpecLoaderException
 from api_scoring_app.infra.validators import PydanticValidator
-from api_scoring_app.infra.subscorers import SchemaSubscorer, DescriptionSubscorer, PathsSubscorer, ResponseCodesSubscorer, ExamplesSubscorer, SecuritySubscorer, MiscSubscorer
-from api_scoring_app.infra.parser.parser import Parser
+from api_scoring_app.infra.engine.scoring_engine import ScoringEngine
+from api_scoring_app.runner.ApiSpecProcessor import APISpecificationProcessor
+from api_scoring_app.infra.subscorers import ExamplesSubscorer, SchemaSubscorer, DescriptionSubscorer, PathsSubscorer, ResponseCodesSubscorer, SecuritySubscorer, MiscSubscorer
 
 @click.command()
 @click.argument("spec_source", type=click.Path(exists=True, dir_okay=False), required=True)
@@ -23,58 +23,30 @@ from api_scoring_app.infra.parser.parser import Parser
     type=click.Path(dir_okay=False, writable=True),
     help='Report output file path (default: stdout)'
 )
-def main(spec_source: str, format: str, output_file: Optional[str]):
-    # print(f"Spec Source: {spec_source}")
-    # print(f"Output Format: {format}")
-    # print(f"Output File: {output_file}")
+def main(spec_source: str, format: Optional[str], output_file: Optional[str]):
+    processor = APISpecificationProcessor()
 
-    # Load the spec
+    processor.scoring_engine.add_subscorer(ExamplesSubscorer())
+    processor.scoring_engine.add_subscorer(SchemaSubscorer())
+    processor.scoring_engine.add_subscorer(DescriptionSubscorer())
+    processor.scoring_engine.add_subscorer(PathsSubscorer())
+    processor.scoring_engine.add_subscorer(ResponseCodesSubscorer())
+    processor.scoring_engine.add_subscorer(SecuritySubscorer())
+    processor.scoring_engine.add_subscorer(MiscSubscorer())
+
     try:
-        spec_loader = SpecLoaderFactory.create_loader(spec_source)
-        spec = spec_loader.load()
+        scoring_reports = processor.process(spec_source)
+
+        # report_generator = ReportGenerator(format=format)
+        # report = report_generator.generate(scoring_reports)
+
+        # if output_file:
+        #     with open(output_file, 'w') as f:
+        #         f.write(report)
+        # else:
+        #     print(report)
+        pprint(scoring_reports)
     except SpecLoaderException as e:
-        print(f"Error loading spec: {e}")
-        return
-
-    # Validate the spec
-    spec_string = json.dumps(spec)
-    validation_result = PydanticValidator(spec_string).validate()
-
-    if not validation_result.is_valid():
-        for each in validation_result.errors:
-            print(each)
-        return
-    
-    spec_model = validation_result.specification
-
-    # Parse the spec
-    parsed_data = Parser().parse(spec_model)
-    # pprint(parsed_data)
-
-    # # description
-    # description_report = DescriptionSubscorer(parsed_data).score_spec()
-    # pprint(description_report)
-
-    # # examples
-    # examples_report = ExamplesSubscorer(parsed_data).score_spec()
-    # pprint(examples_report)
-
-    # # misc
-    # misc_report = MiscSubscorer(parsed_data).score_spec()
-    # pprint(misc_report)
-
-    # paths
-    # paths_report = PathsSubscorer(parsed_data).score_spec()
-    # pprint(paths_report)
-
-    # response codes
-    # response_codes_report = ResponseCodesSubscorer(parsed_data).score_spec()
-    # pprint(response_codes_report)
-
-    # schemas
-    # schemas_report = SchemaSubscorer(parsed_data).score_spec()
-    # pprint(schemas_report)
-
-    # security
-    security_report = SecuritySubscorer(parsed_data).score_spec()
-    pprint(security_report)
+        print(e)
+    # except ValidationException as e:
+    #     print(f"Validation error: {e}")

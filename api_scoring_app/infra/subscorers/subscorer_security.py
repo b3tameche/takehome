@@ -2,28 +2,29 @@ from dataclasses import dataclass, field
 
 from openapi_pydantic import SecurityScheme, OAuthFlows
 
-from api_scoring_app.core.types import ScoringReport, Issue, IssueSeverity, WrappedSecurityRequirement, MissingFieldError, ParsedSpecification
+from api_scoring_app.core import Config
+from api_scoring_app.core.types import MissingFieldError
+from api_scoring_app.core.parser import WrappedSecurityRequirement
+from api_scoring_app.core.subscorers import ScoringReport, Issue, IssueSeverity, ParsedSpecification, BaseScorer
 
 @dataclass
-class SecuritySubscorer:
+class SecuritySubscorer(BaseScorer):
     """
     Security subscorer for OpenAPI specification.
     """
-
-    parsed_specification: ParsedSpecification = field(default_factory=ParsedSpecification)
 
     _security_scheme_errors: list[MissingFieldError] = field(init=False, default_factory=list)
     _unused_security_schemes: list[WrappedSecurityRequirement] = field(init=False, default_factory=list)
     _undefined_security_schemes: list[WrappedSecurityRequirement] = field(init=False, default_factory=list)
 
-    def score_spec(self) -> ScoringReport:
-        scoring_report = ScoringReport()
+    def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
+        scoring_report = ScoringReport(Config.SECURITY_SUBSCORER_NAME)
 
         # self._recursive_security_schema_search(spec)
-        self._populate_security_info()
+        self._populate_security_info(parsed_specification)
 
         # security schemes are not defined
-        if not self.parsed_specification.security.defined_schemes:
+        if not parsed_specification.security.defined_schemes:
             scoring_report.add_issue(
                 Issue(
                     severity=IssueSeverity.ZERO,
@@ -78,18 +79,18 @@ class SecuritySubscorer:
             severity=IssueSeverity.MEDIUM
         )
 
-        return scoring_report
+        return [scoring_report]
     
-    def _populate_security_info(self) -> None:
-        for path, scheme in self.parsed_specification.security.schemes:
+    def _populate_security_info(self, parsed_specification: ParsedSpecification) -> None:
+        for path, scheme in parsed_specification.security.schemes:
             validation_errors = self._validate_security_scheme(scheme, path)
             if validation_errors:
                 self._security_scheme_errors.extend(validation_errors)
 
-        self._unused_security_schemes = [scheme for scheme in self.parsed_specification.security.defined_schemes if scheme not in self.parsed_specification.security.referenced_schemes]
+        self._unused_security_schemes = [scheme for scheme in parsed_specification.security.defined_schemes if scheme not in parsed_specification.security.referenced_schemes]
         
-        undefined_from_referenced = [scheme for scheme in self.parsed_specification.security.referenced_schemes if scheme not in self.parsed_specification.security.defined_schemes]
-        undefined_from_operation_referenced = [scheme for scheme in self.parsed_specification.security.operation_referenced_schemes if scheme not in self.parsed_specification.security.defined_schemes]
+        undefined_from_referenced = [scheme for scheme in parsed_specification.security.referenced_schemes if scheme not in parsed_specification.security.defined_schemes]
+        undefined_from_operation_referenced = [scheme for scheme in parsed_specification.security.operation_referenced_schemes if scheme not in parsed_specification.security.defined_schemes]
         self._undefined_security_schemes = undefined_from_referenced + undefined_from_operation_referenced
 
 

@@ -1,19 +1,17 @@
 import re
 
-from typing import Dict, List, Tuple
+from typing import Tuple
 from dataclasses import dataclass, field
 
-from openapi_pydantic import OpenAPI, PathItem
-
-from api_scoring_app.core.types import ScoringReport, Issue, IssueSeverity, NamingConvention, ParsedSpecification
+from api_scoring_app.core.subscorers import ScoringReport, Issue, IssueSeverity, ParsedSpecification, BaseScorer
+from api_scoring_app.core import Config
+from api_scoring_app.core.types import NamingConvention
 
 @dataclass
-class PathsSubscorer:
+class PathsSubscorer(BaseScorer):
     """
     Paths & Operations subscorer for OpenAPI specification.
     """
-
-    parsed_specification: ParsedSpecification = field(default_factory=ParsedSpecification)
 
     _overlapping_paths: list[Tuple[str, str]] = field(init=False, default_factory=list)
     _inconsistent_namings: list[Tuple[str, str]] = field(init=False, default_factory=list)
@@ -25,12 +23,11 @@ class PathsSubscorer:
         NamingConvention.SNAKE: 0
     })
 
-    def score_spec(self) -> ScoringReport:
-        scoring_report = ScoringReport()
-        weight: float = 1.0
+    def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
+        scoring_report = ScoringReport(Config.PATHS_SUBSCORER_NAME)
         
         # populate necessary fields
-        self._check_paths()
+        self._check_paths(parsed_specification)
 
         # Report CRUD violations
         for path, operation in self._crud_violations:
@@ -40,7 +37,6 @@ class PathsSubscorer:
                 severity=IssueSeverity.LOW,
                 suggestion="'GET' for retrieval, 'POST' for creation, PUT/PATCH for updates, DELETE for removal."
             ))
-            weight *= 0.95
 
         # overlapping paths
         for path1, path2 in self._overlapping_paths:
@@ -49,7 +45,6 @@ class PathsSubscorer:
                 severity=IssueSeverity.HIGH,
                 suggestion="Remove one of the paths."
             ))
-            weight *= 0.85
 
         # inconsistent naming
         frequent_naming_convention: NamingConvention = NamingConvention.KEBAB
@@ -64,19 +59,15 @@ class PathsSubscorer:
                 severity=IssueSeverity.MEDIUM,
                 suggestion=suggestion
             ))
-            weight *= 0.92
 
-        # update report weight
-        scoring_report.weight = weight
-
-        return scoring_report
+        return [scoring_report]
     
-    def _check_paths(self) -> None:
-        path_names = list(self.parsed_specification.paths.path_to_operations.keys())
+    def _check_paths(self, parsed_specification: ParsedSpecification) -> None:
+        path_names = list(parsed_specification.paths.path_to_operations.keys())
 
         for i, path1 in enumerate(path_names):
             # CRUD conventions
-            self._follows_crud_conventions(path1, self.parsed_specification.paths.path_to_operations[path1])
+            self._follows_crud_conventions(path1, parsed_specification.paths.path_to_operations[path1])
 
             for _, path2 in enumerate(path_names[i+1:], start=i+1):
                 # overlapping paths

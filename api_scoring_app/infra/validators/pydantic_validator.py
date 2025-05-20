@@ -6,18 +6,16 @@ from prance import _PLACEHOLDER_URL as PLACEHOLDER_URL
 from openapi_pydantic import OpenAPI
 from pydantic_core import ValidationError as PydanticValidationError
 
-from api_scoring_app.core.types import ValidationResult, ValidationError
+from api_scoring_app.core.validator import ValidationResult, ValidationError
 
 class PydanticValidator:
-    def __init__(self, spec_string: str) -> None:
-        self.spec_string = spec_string
-
-    def _resolve(self) -> dict[str, Any]:
+    
+    def _resolve(self, spec_string: str) -> dict[str, Any]:
         """
         Uses Prance just for resolving references.
         """
 
-        specification = parse_spec(self.spec_string, PLACEHOLDER_URL)
+        specification = parse_spec(spec_string, PLACEHOLDER_URL)
 
         resolver = RefResolver(
             specification,
@@ -26,7 +24,7 @@ class PydanticValidator:
         resolver.resolve_references()
         return resolver.specs
 
-    def validate(self) -> ValidationResult:
+    def validate(self, spec_string: str) -> ValidationResult:
         """
         Uses pydantic models from `openapi-pydantic` for validating the resolved spec.
         """
@@ -35,7 +33,7 @@ class PydanticValidator:
         
         try:
             # Resolve references first
-            resolved_spec = self._resolve()
+            resolved_spec = self._resolve(spec_string)
 
             spec_model = OpenAPI.model_validate(resolved_spec)
             result.set_specification(spec_model)

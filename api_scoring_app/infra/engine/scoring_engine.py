@@ -1,18 +1,17 @@
-from typing import Any
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
-from api_scoring_app.core import IScorer
+from api_scoring_app.core import BaseCompositeScorer
+from api_scoring_app.core.subscorers import ScoringReport, ParsedSpecification
 
 @dataclass
-class ScoringEngine:
+class ScoringEngine(BaseCompositeScorer):
     """
     Default scoring engine for OpenAPI specification.
     """
 
-    subscorers: list[IScorer] = field(default_factory=list)
+    def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
+        reports = []
+        for subscorer in self.subscorers:
+            reports.extend(subscorer.score_spec(parsed_specification))
 
-    def score_spec(self, spec: dict[str, Any]) -> int:
-        pass
-
-    def add_subscorer(self, subscorer: IScorer) -> None:
-        self.subscorers.append(subscorer)
+        return reports

@@ -1,32 +1,26 @@
 from dataclasses import dataclass, field
 
-from openapi_pydantic import OpenAPI, Responses
-
-from api_scoring_app.core import IScorer
-from api_scoring_app.core.types import ScoringReport, Issue, IssueSeverity, ParsedSpecification
-from api_scoring_app.core.config import Config
+from api_scoring_app.core import Config
+from api_scoring_app.core.subscorers import ScoringReport, Issue, IssueSeverity, ParsedSpecification, BaseScorer
 
 @dataclass
-class ResponseCodesSubscorer:
+class ResponseCodesSubscorer(BaseScorer):
     """
     Response Codes subscorer for OpenAPI specification.
     """
 
-    parsed_specification: ParsedSpecification
-
-    _missing_responses: list[list[str]] = field(init=False, default_factory=list)
+    # _missing_responses: list[list[str]] = field(init=False, default_factory=list)
     _missing_success_responses: list[list[str]] = field(init=False, default_factory=list)
     _missing_error_responses: list[list[str]] = field(init=False, default_factory=list)
     _empty_content_responses: list[list[str]] = field(init=False, default_factory=list)
 
-    def score_spec(self) -> ScoringReport:
-        scoring_report = ScoringReport()
-        weight: float = 1.0
+    def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
+        scoring_report = ScoringReport(Config.RESPONSE_CODES_SUBSCORER_NAME)
 
-        self._populate_fields()
+        self._populate_fields(parsed_specification)
 
         # missing responses
-        for missing_response in self._missing_responses:
+        for missing_response in parsed_specification.response_codes.missing_responses:
             path_as_string = " -> ".join(missing_response)
             scoring_report.add_issue(Issue(
                 message=f"Missing responses definition at: {path_as_string}",
@@ -34,7 +28,6 @@ class ResponseCodesSubscorer:
                 severity=IssueSeverity.MEDIUM,
                 suggestion="Add a responses definition to this operation."
             ))
-            # weight *= 0.85
 
         # missing success responses
         for path in self._missing_success_responses:
@@ -45,7 +38,6 @@ class ResponseCodesSubscorer:
                 severity=IssueSeverity.HIGH,
                 suggestion=f"Add at least one success response to this operation."
             ))
-            weight *= 0.85
 
         # missing error responses
         for path in self._missing_error_responses:
@@ -56,7 +48,6 @@ class ResponseCodesSubscorer:
                 severity=IssueSeverity.MEDIUM,
                 suggestion=f"Add appropriate error responses to this operation."
             ))
-            weight *= 0.9
 
         # empty content
         for path in self._empty_content_responses:
@@ -67,37 +58,43 @@ class ResponseCodesSubscorer:
                 severity=IssueSeverity.MEDIUM,
                 suggestion=f"Add a content definition for this response."
             ))
-            weight *= 0.92
 
-        # Update report weight
-        scoring_report.weight = weight
-
-        return scoring_report
+        return [scoring_report]
     
-    def _populate_fields(self) -> None:
-        has_success = False
-        has_error = False
-
-        for path, response in self.parsed_specification.response_codes.responses:
-            status_code = path[-1]
-
-            if status_code in Config.SUCCESS_CODES:
-                has_success = True
-
-            # error response
-            if status_code in Config.ERROR_CODES:
-                has_error = True
-
+    def _populate_fields(self, parsed_specification: ParsedSpecification) -> None:
+        if parsed_specification.response_codes.responses is None:
+            return # no need to check for success/error codes
+        
+        # path -> observed status codes
+        by_path: dict[tuple[str], list[str]] = {}
+        for path, response in parsed_specification.response_codes.responses:
+            key = tuple(path[:-1])
+            value = path[-1]
+            if key in by_path:
+                by_path[key].append(value)
+            else:
+                by_path[key] = [value]
+            
             # content
             if response.content is None:
                 # "204 = no content"
-                if status_code not in Config.NO_CONTENT_CODES:
+                if value not in Config.RESPONSE_CODES_NO_CONTENT_CODES:
                     self._empty_content_responses.append(path)
+        
 
-        # missing success responses
-        if not has_success:
-            self._missing_success_responses.append(path)
+        for path, status_codes in by_path.items():
+            has_success = False
+            has_error = False
 
-        # missing error responses
-        if not has_error:
-            self._missing_error_responses.append(path)
+            for status_code in status_codes:
+                if status_code in Config.RESPONSE_CODES_SUCCESS_CODES:
+                    has_success = True
+
+                if status_code in Config.RESPONSE_CODES_ERROR_CODES:
+                    has_error = True
+
+            if not has_success:
+                self._missing_success_responses.append(path)
+
+            if not has_error:
+                self._missing_error_responses.append(path)

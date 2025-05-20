@@ -4,7 +4,8 @@ import json
 import requests
 
 from typing import Any
-from api_scoring_app.core import ISpecLoader, SpecLoaderException
+from api_scoring_app.core import ISpecLoader
+from api_scoring_app.core.spec_loader import SpecLoaderException
 from api_scoring_app.infra.utils.request_builder import RequestBuilder
 
 class LocalSpecLoader:

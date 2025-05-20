@@ -1,9 +1,9 @@
 from typing import Any, List
-from openapi_pydantic import PathItem, RequestBody, Response, SecurityRequirement, Server, Tag, MediaType, Schema, SecurityScheme
+from openapi_pydantic import OpenAPI, PathItem, RequestBody, Response, SecurityRequirement, Server, Tag, MediaType, Schema, SecurityScheme
 from pydantic import BaseModel
 from dataclasses import dataclass, field
 from api_scoring_app.core.config import Config
-from api_scoring_app.core.types import ParsedSpecification, WrappedTag, WrappedSecurityRequirement
+from api_scoring_app.core.parser import WrappedTag, WrappedSecurityRequirement, ParsedSpecification
 
 @dataclass
 class Parser:
@@ -11,7 +11,7 @@ class Parser:
     config: Config = field(default_factory=Config)
     parsed_specification: ParsedSpecification = field(init=False, default_factory=ParsedSpecification)
 
-    def parse(self, obj: Any) -> ParsedSpecification:
+    def parse(self, obj: OpenAPI) -> ParsedSpecification:
         self._recursive_parser(obj)
 
         return self.parsed_specification
@@ -52,7 +52,7 @@ class Parser:
 
     def _populate_examples(self, obj: Any, path: list[str] = []):
         if len(path) > 2 and path[0] == 'paths':
-            for method in self.config.MAJOR_METHODS: # examples should be defined for major methods
+            for method in self.config.EXAMPLES_MAJOR_METHODS: # examples should be defined for major methods
                 if path[2] != method:
                     continue
 
@@ -67,7 +67,7 @@ class Parser:
             self.parsed_specification.misc.tags_defined.append(WrappedTag(obj.name, path))
         elif isinstance(obj, Server):
             self.parsed_specification.misc.servers_defined.append(obj)
-        elif len(path) > 0 and path[-1] == 'paths':
+        elif len(path) > 0 and path[-1] == 'paths' and obj is not None:
             self.parsed_specification.misc.paths_defined.append(list(obj.keys())[0].strip('/'))
         elif len(path) > 1 and path[-1] == 'tags' and obj is not None: # tags from operation object
             for tag in obj:
@@ -81,8 +81,13 @@ class Parser:
 
 
     def _populate_response_codes(self, obj: Any, path: list[str] = []):
-        if len(path) > 0 and path[0] == 'paths': # response should come from path item
+        if len(path) > 0 and path[-1] in self.config.OPERATIONS:
+            if obj is not None and obj.responses is None:
+                self.parsed_specification.response_codes.missing_responses.append(path)
+
+        if len(path) > 0 and path[0] == 'paths' and obj is not None: # response should come from path item
             if isinstance(obj, Response):
+                # print(path)
                 self.parsed_specification.response_codes.responses.append((path, obj))
 
 
@@ -127,7 +132,7 @@ class Parser:
 
 
     def _get_operations(self, path_item: PathItem) -> List[str]:
-        return [op for op in path_item.model_fields_set if op in ('get', 'put', 'post', 'delete', 'patch', 'head', 'options', 'trace')]
+        return [op for op in path_item.model_fields_set if op in self.config.OPERATIONS]
 
 
     def _is_free_form_schema(self, schema: Schema) -> bool:
