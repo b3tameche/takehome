@@ -69,6 +69,7 @@ class ResponseCodesSubscorer(BaseScorer):
         )
 
         # empty content
+        issues = []
         for path in self._empty_content_responses:
             path_as_string = " -> ".join(path)
             issues.append(Issue(

@@ -86,8 +86,8 @@ class ParsedResponseCodes:
 
 @dataclass
 class ParsedSchema:
-    free_form_schemas: list[list[str]] = field(init=False, default_factory=list)
-    missing_schemas: list[list[str]] = field(init=False, default_factory=list)
+    free_form_schemas: list[list[str]] = field(default_factory=list)
+    missing_schemas: list[list[str]] = field(default_factory=list)
 
 
 @dataclass

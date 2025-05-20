@@ -1,0 +1,136 @@
+openapi: 3.1.0
+info:
+  title: Known issues test API
+  version: 1.0.0
+  description: For testing known issues
+
+paths: # paths are not versioned
+  /users:
+    get:
+      summary: list users
+      # missing description
+      tags:
+        - users
+      responses:
+        200:
+          description: succ # short description
+          content:
+            application/json:
+              schema:
+                type: object # free-form schema
+              # missing examples
+            application/xml:
+              schema:
+                # missing schema
+        # missing error responses
+    post:
+      summary: create user
+      description: creates new user
+      tags:
+        - piertotum # referenced, but not defined
+      responses:
+        201:
+          description: user created successfully
+          content:
+            # empty content
+        501:
+          description: invalid body
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  error: "invalid body"
+                properties:
+                  error:
+                    type: string
+  /users/{a}:
+    get:
+      summary: get user by id
+      description: get user by id
+      responses:
+        200:
+          description: user found
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  name: "John Doe"
+                properties:
+                  name:
+                    type: string
+        500:
+          description: server error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  error: "server error"
+                properties:
+                  error:
+                    type: string
+  /users/b: # overlapping with above path
+    get:
+      summary: get user by id
+      description: get user by id
+      responses:
+        200:
+          description: second user found
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  name: "Jane Doe"
+                properties:
+                  name:
+                    type: string
+        500:
+          description: server error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  error: "server error"
+                properties:
+                  error:
+                    type: string
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: user's id
+        name:
+          type: string
+          description: user's name
+        email:
+          type: string
+          description: user's email
+      required:
+        - id
+        - name
+        - email
+
+    UserInput:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+      required:
+        - name
+        - email
+
+tags:
+  - name: users
+    description: users aingonlie
+
+# missing security schemes

@@ -22,6 +22,7 @@ class Parser:
         self._populate_misc(obj, path)
         self._populate_response_codes(obj, path)
         self._populate_schemas(obj, path)
+        self._populate_paths(obj, path)
         
         if self._populate_security(obj, path):
             return

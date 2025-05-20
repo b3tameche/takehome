@@ -10,9 +10,6 @@ class SchemaSubscorer(BaseScorer):
     """
     points: float
 
-    _free_form_schemas: list[list[str]] = field(init=False, default_factory=list)
-    _missing_schemas: list[list[str]] = field(init=False, default_factory=list)
-
     def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
         scoring_report = ScoringReport(Config.SCHEMA_SUBSCORER_NAME, self.points)
 

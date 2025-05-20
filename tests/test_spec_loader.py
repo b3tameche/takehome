@@ -6,7 +6,7 @@ import requests
 from unittest.mock import patch, Mock, mock_open
 
 from api_scoring_app.infra.utils import SpecLoaderFactory, LocalSpecLoader, URLSpecLoader
-from api_scoring_app.core import SpecLoaderException
+from api_scoring_app.core.spec_loader import SpecLoaderException
 
 
 
@@ -248,5 +248,3 @@ class TestURLSpecLoader(unittest.TestCase):
         mock_get.assert_called_once()
         self.assertIn("Error parsing spec from URL", str(context.exception))
 
-if __name__ == "__main__":
-    unittest.main()
