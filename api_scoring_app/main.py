@@ -2,6 +2,7 @@ import click
 
 from typing import Optional
 
+from api_scoring_app.core.validator import ValidationException
 from api_scoring_app.infra.utils.spec_loader import SpecLoaderException
 from api_scoring_app.infra.utils.reports import ReportGeneratorFactory
 from api_scoring_app.runner.ApiSpecProcessor import APISpecificationProcessor
@@ -44,7 +45,7 @@ def main(spec_source: str, format: Optional[str], output_file: Optional[str]):
         else:
             print(report)
 
-    except SpecLoaderException as e:
+    except (SpecLoaderException, ValidationException) as e:
         print(e)
     except Exception as e:
         print(f'Error occured while generating report: {e}')

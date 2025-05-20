@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from api_scoring_app.core.subscorers import ScoringReport
 from api_scoring_app.infra.engine import ScoringEngine
 from api_scoring_app.core import IValidator, IParser
+from api_scoring_app.core.validator import ValidationException
 from api_scoring_app.infra.validators import PydanticValidator
 from api_scoring_app.infra.parser import Parser
 from api_scoring_app.infra.utils import SpecLoaderFactory
@@ -30,9 +31,7 @@ class APISpecificationProcessor:
         # 2. validate
         validation_result = self.validator.validate(spec_string)
         if not validation_result.is_valid():
-            for each in validation_result.errors:
-                print(each)
-            return []
+            raise ValidationException(validation_result.errors)
 
         # 3. parse
         parsed_spec = self.parser.parse(validation_result.specification)

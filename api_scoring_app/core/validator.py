@@ -6,7 +6,7 @@ from openapi_pydantic import OpenAPI
 
 
 @dataclass
-class ValidationError(Exception):
+class ValidationError:
     """
     Wrapper for validation errors returned from pydantic models.
     """
@@ -17,7 +17,22 @@ class ValidationError(Exception):
     def __str__(self) -> str:
         path_as_string = ' -> '.join(map(str, self.path))
 
-        return f"[VALIDATION ERROR] ({path_as_string}): {self.message}"
+        return f"({path_as_string}): {self.message}"
+
+
+class ValidationException(Exception):
+    """
+    Exception raised when validation fails.
+    """
+
+    def __init__(self, errors: list[ValidationError]):
+        self.errors = errors
+    
+    def __str__(self) -> str:
+        output = "Validation Errors:\n"
+        for error in self.errors:
+            output += f"\n{error}"
+        return output
 
 
 @dataclass
