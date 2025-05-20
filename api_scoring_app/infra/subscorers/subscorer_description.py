@@ -11,6 +11,10 @@ class DescriptionSubscorer(BaseScorer):
     points: float
 
     def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
+        """
+        Score the specification using the description subscorer.
+        """
+
         scoring_report = ScoringReport(Config.DESCRIPTION_SUBSCORER_NAME, self.points)
 
         # check for missing descriptions

@@ -13,13 +13,23 @@ class IReportGenerator(Protocol):
 class ReportUtils:
     @staticmethod
     def get_total_score(reports: List[ScoringReport]) -> float:
+        """
+        Get the total score of the reports.
+        """
         return round(sum(report.points for report in reports), 1)
     
+    @staticmethod
     def get_max_possible_score(reports: List[ScoringReport]) -> float:
+        """
+        Get the maximum possible score of all of the reports.
+        """
         return round(sum(report.max_points for report in reports), 1)
 
     @staticmethod
     def get_severity_counts(reports: List[ScoringReport]) -> Dict[str, int]:
+        """
+        Get the count of issues for each severity.
+        """
         severity_counts = {
             IssueSeverity.LOW.name: 0,
             IssueSeverity.MEDIUM.name: 0, 
@@ -37,6 +47,9 @@ class ReportUtils:
     
     @staticmethod
     def get_overall_grade(reports: List[ScoringReport]) -> str:
+        """
+        Get the overall grade of the reports.
+        """
         total_score = ReportUtils.get_total_score(reports)
         if total_score >= 90:
             return "A"
@@ -54,7 +67,9 @@ class ReportUtils:
 
 class JsonReportGenerator:
     def generate_report(self, reports: List[ScoringReport]) -> str:
-
+        """
+        Generate a JSON report of the reports.
+        """
         try:
             total_score = ReportUtils.get_total_score(reports)
             overall_grade = ReportUtils.get_overall_grade(reports)

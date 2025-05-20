@@ -12,11 +12,19 @@ class Parser:
     parsed_specification: ParsedSpecification = field(init=False, default_factory=ParsedSpecification)
 
     def parse(self, obj: OpenAPI) -> ParsedSpecification:
+        """
+        Parse the OpenAPI specification object.
+        """
+
         self._recursive_parser(obj)
 
         return self.parsed_specification
     
     def _recursive_parser(self, obj: Any, path: list[str] = []) -> dict:
+        """
+        Recursively parse the OpenAPI specification object.
+        """
+
         self._populate_description(obj, path)
         self._populate_examples(obj, path)
         self._populate_misc(obj, path)
@@ -43,6 +51,10 @@ class Parser:
     
 
     def _populate_description(self, obj: Any, path: list[str] = []):
+        """
+        Populate the fields for description subscorer.
+        """
+
         if isinstance(obj, self.config.DESCRIPTION_TYPES_TO_CHECK):
             if hasattr(obj, "description"):
                 if obj.description is None:
@@ -52,6 +64,10 @@ class Parser:
     
 
     def _populate_examples(self, obj: Any, path: list[str] = []):
+        """
+        Populate the fields for examples subscorer.
+        """
+
         if len(path) > 2 and path[0] == 'paths':
             for method in self.config.EXAMPLES_MAJOR_METHODS: # examples should be defined for major methods
                 if path[2] != method:
@@ -64,6 +80,10 @@ class Parser:
     
 
     def _populate_misc(self, obj: Any, path: list[str] = []):
+        """
+        Populate the fields for misc subscorer.
+        """
+
         if isinstance(obj, Tag):
             self.parsed_specification.misc.tags_defined.append(WrappedTag(obj.name, path))
         elif isinstance(obj, Server):
@@ -78,12 +98,20 @@ class Parser:
 
 
     def _populate_paths(self, obj: Any, path: list[str] = []):
+        """
+        Populate the fields for paths subscorer.
+        """
+
         if isinstance(obj, PathItem):
             operations = self._get_operations(obj)
             self.parsed_specification.paths.path_to_operations[path[-1]] = operations
 
 
     def _populate_response_codes(self, obj: Any, path: list[str] = []):
+        """
+        Populate the fields for response codes subscorer.
+        """
+
         if len(path) > 0 and path[-1] in self.config.OPERATIONS:
             if obj is not None and obj.responses is None:
                 self.parsed_specification.response_codes.missing_responses.append(path)
@@ -95,6 +123,10 @@ class Parser:
 
 
     def _populate_schemas(self, obj: Any, path: list[str] = []):
+        """
+        Populate the fields for schemas subscorer.
+        """
+
         # check free-form schemas
         if isinstance(obj, Schema):
             if self._is_free_form_schema(obj):
@@ -107,6 +139,10 @@ class Parser:
 
 
     def _populate_security(self, obj: Any, path: list[str] = []) -> bool:
+        """
+        Populate the fields for security subscorer.
+        """
+
         if isinstance(obj, SecurityScheme):
             scheme_name = path[-1]
             self.parsed_specification.security.defined_schemes.append(WrappedSecurityRequirement(scheme_name, path))
@@ -134,13 +170,25 @@ class Parser:
         return False
     
     def _is_operation(self, keyword: str) -> bool:
+        """
+        Check if the keyword is an operation.
+        """
+
         return keyword in self.config.OPERATIONS
 
     def _get_operations(self, path_item: PathItem) -> List[str]:
+        """
+        Get the operations from the path item.
+        """
+
         return [op for op in path_item.model_fields_set if op in self.config.OPERATIONS]
 
 
     def _is_free_form_schema(self, schema: Schema) -> bool:
+        """
+        Check if the schema is a free-form schema.
+        """
+
         condition = (schema.type == "object" and schema.additionalProperties is True) or \
             (schema.type == "object" and schema.additionalProperties is None)
         

@@ -25,6 +25,10 @@ class PathsSubscorer(BaseScorer):
     })
 
     def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
+        """
+        Score the specification using the paths subscorer.
+        """
+
         scoring_report = ScoringReport(Config.PATHS_SUBSCORER_NAME, self.points)
         
         # populate necessary fields
@@ -82,6 +86,10 @@ class PathsSubscorer(BaseScorer):
         return [scoring_report]
     
     def _check_paths(self, parsed_specification: ParsedSpecification) -> None:
+        """
+        Check the paths of the specification for possible errors.
+        """
+
         path_names = list(parsed_specification.paths.path_to_operations.keys())
 
         for i, path1 in enumerate(path_names):

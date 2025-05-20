@@ -11,6 +11,10 @@ class SchemaSubscorer(BaseScorer):
     points: float
 
     def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
+        """
+        Score the specification using the schema subscorer.
+        """
+
         scoring_report = ScoringReport(Config.SCHEMA_SUBSCORER_NAME, self.points)
 
         # check for free-form schemas

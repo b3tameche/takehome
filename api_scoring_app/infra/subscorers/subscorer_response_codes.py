@@ -16,6 +16,9 @@ class ResponseCodesSubscorer(BaseScorer):
     _empty_content_responses: list[list[str]] = field(init=False, default_factory=list)
 
     def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
+        """
+        Score the specification using the response codes subscorer.
+        """
         scoring_report = ScoringReport(Config.RESPONSE_CODES_SUBSCORER_NAME, self.points)
 
         self._populate_fields(parsed_specification)
@@ -87,6 +90,10 @@ class ResponseCodesSubscorer(BaseScorer):
         return [scoring_report]
     
     def _populate_fields(self, parsed_specification: ParsedSpecification) -> None:
+        """
+        Populate the fields for response codes subscorer.
+        """
+
         if parsed_specification.response_codes.responses is None:
             return # no need to check for success/error codes
         

@@ -12,6 +12,10 @@ class ScoringEngine(BaseScorer):
     subscorers: list[BaseScorer] = field(default_factory=list)
 
     def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
+        """
+        Score the specification using all subscorers.
+        """
+
         reports = []
         for subscorer in self.subscorers:
             reports.extend(subscorer.score_spec(parsed_specification))
@@ -19,4 +23,8 @@ class ScoringEngine(BaseScorer):
         return reports
     
     def add_subscorer(self, subscorer: BaseScorer) -> None:
+        """
+        Add a subscorer to the engine.
+        """
+
         self.subscorers.append(subscorer)

@@ -19,6 +19,9 @@ class SecuritySubscorer(BaseScorer):
     _undefined_security_schemes: list[WrappedSecurityRequirement] = field(init=False, default_factory=list)
 
     def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
+        """
+        Score the specification using the security subscorer.
+        """
         scoring_report = ScoringReport(Config.SECURITY_SUBSCORER_NAME, self.points)
 
         # self._recursive_security_schema_search(spec)
@@ -83,6 +86,10 @@ class SecuritySubscorer(BaseScorer):
         return [scoring_report]
     
     def _populate_security_info(self, parsed_specification: ParsedSpecification) -> None:
+        """
+        Populate the fields for security subscorer.
+        """
+
         for path, scheme in parsed_specification.security.schemes:
             validation_errors = self._validate_security_scheme(scheme, path)
             if validation_errors:

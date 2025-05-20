@@ -17,6 +17,10 @@ class ExamplesSubscorer(BaseScorer):
     _missing_response_examples: list[list[str]] = field(init=False, default_factory=list)
 
     def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
+        """
+        Score the specification using the examples subscorer.
+        """
+
         scoring_report = ScoringReport(Config.EXAMPLES_SUBSCORER_NAME, self.points)
 
         self._populate_fields(parsed_specification)
@@ -54,6 +58,10 @@ class ExamplesSubscorer(BaseScorer):
         return [scoring_report]
     
     def _populate_fields(self, parsed_specification: ParsedSpecification) -> None:
+        """
+        Populate the fields for examples subscorer.
+        """
+
         for path, request_body in parsed_specification.examples.request_bodies:
             if request_body.required:
                 has_example = False
@@ -79,13 +87,6 @@ class ExamplesSubscorer(BaseScorer):
                             
             if not has_example:
                 self._missing_response_examples.append(path)
-    
-    def _is_major_path(self, path: str) -> bool:
-        """
-        Path is major if it's a root-level resource (`/users`)
-        """
-        path_parts = [p for p in path.strip('/').split('/') if not p.startswith('{')]
-        return len(path_parts) == 1
     
     def _has_examples(self, media_type: MediaType) -> bool:
         """

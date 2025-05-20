@@ -63,6 +63,7 @@ class ScoringReport:
 
 
 class BaseScorer(ABC):
+    """Base class for all scorers."""
     
     def __init__(self, points: float) -> None:
         self.points = points
