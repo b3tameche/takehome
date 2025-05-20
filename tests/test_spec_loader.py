@@ -52,7 +52,7 @@ class TestLocalSpecLoader(unittest.TestCase):
         self.assertIn("File not found", str(context.exception))
 
     def test_load_local_json_file(self):
-        test_spec_path = os.path.join(os.path.dirname(__file__), "test_spec.json")
+        test_spec_path = os.path.join(os.path.dirname(__file__), "specs/test_spec.json")
         loader = LocalSpecLoader(test_spec_path)
         result = loader.load()
 
@@ -63,7 +63,7 @@ class TestLocalSpecLoader(unittest.TestCase):
         self.assertTrue("paths" in result)
 
     def test_load_local_yaml_file(self):
-        test_spec_path = os.path.join(os.path.dirname(__file__), "test_spec.yaml")
+        test_spec_path = os.path.join(os.path.dirname(__file__), "specs/test_spec.yaml")
         loader = LocalSpecLoader(test_spec_path)
         result = loader.load()
 
