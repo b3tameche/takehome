@@ -125,3 +125,4 @@ class TestIntegration(unittest.TestCase):
 
         # one unversioned paths
         self.assertEqual(len([issue for issue in misc_report.issues if "paths are not consistently versioned" == issue.message.lower()]), 1)
+
