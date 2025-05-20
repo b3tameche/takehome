@@ -5,8 +5,7 @@ from dataclasses import dataclass, field
 
 from openapi_pydantic import OpenAPI, PathItem
 
-from api_scoring_app.core import IScorer
-from api_scoring_app.core.types import ScoringReport, Issue, IssueSeverity, NamingConvention
+from api_scoring_app.core.types import ScoringReport, Issue, IssueSeverity, NamingConvention, ParsedSpecification
 
 @dataclass
 class PathsSubscorer:
@@ -14,7 +13,7 @@ class PathsSubscorer:
     Paths & Operations subscorer for OpenAPI specification.
     """
 
-    subscorers: list[IScorer] = field(default_factory=list)
+    parsed_specification: ParsedSpecification = field(default_factory=ParsedSpecification)
 
     _overlapping_paths: list[Tuple[str, str]] = field(init=False, default_factory=list)
     _inconsistent_namings: list[Tuple[str, str]] = field(init=False, default_factory=list)
@@ -26,22 +25,12 @@ class PathsSubscorer:
         NamingConvention.SNAKE: 0
     })
 
-    def score_spec(self, spec: OpenAPI) -> ScoringReport:
+    def score_spec(self) -> ScoringReport:
         scoring_report = ScoringReport()
         weight: float = 1.0
-
-        # check if paths object exists
-        if not spec.paths:
-            scoring_report.add_issue(Issue(
-                message="'paths' is missing from specification.",
-                severity=IssueSeverity.CRITICAL,
-                suggestion="Add 'paths' to the specification."
-            ))
-            scoring_report.weight = 0.0
-            return scoring_report
         
         # populate necessary fields
-        self._check_paths(spec)
+        self._check_paths()
 
         # Report CRUD violations
         for path, operation in self._crud_violations:
@@ -82,17 +71,12 @@ class PathsSubscorer:
 
         return scoring_report
     
-    def _check_paths(self, spec: OpenAPI) -> None:
-        paths = spec.paths
-        if paths is None:
-            return
-
-        path_to_pathitem: Dict[str, PathItem] = {path: item for path, item in paths.items()}
-        path_names = list(path_to_pathitem.keys())
+    def _check_paths(self) -> None:
+        path_names = list(self.parsed_specification.paths.path_to_operations.keys())
 
         for i, path1 in enumerate(path_names):
             # CRUD conventions
-            self._follows_crud_conventions(path1, path_to_pathitem[path1])
+            self._follows_crud_conventions(path1, self.parsed_specification.paths.path_to_operations[path1])
 
             for _, path2 in enumerate(path_names[i+1:], start=i+1):
                 # overlapping paths
@@ -157,7 +141,7 @@ class PathsSubscorer:
 
         return condition
     
-    def _follows_crud_conventions(self, path: str, path_item: PathItem) -> None:
+    def _follows_crud_conventions(self, path: str, operations: list[str]) -> None:
         """
         Checks that `path_item` follows CRUD conventions:
         - `get` for retrieval
@@ -165,7 +149,6 @@ class PathsSubscorer:
         - `put`/`patch` for updates
         - `delete` for removal
         """
-        operations = self._get_operations(path_item)
 
         for operation in operations:
             # these are just example violations ofc
@@ -176,9 +159,3 @@ class PathsSubscorer:
 
             if violation1 or violation2 or violation3 or violation4:
                 self._crud_violations.append((path, operation))
-    
-    def _get_operations(self, path_item: PathItem) -> List[str]:
-        return [op for op in path_item.model_fields_set if op in ('get', 'put', 'post', 'delete', 'patch', 'head', 'options', 'trace')]
-
-    def add_subscorer(self, subscorer: IScorer) -> None:
-        self.subscorers.append(subscorer) 

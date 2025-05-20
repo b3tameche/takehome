@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from openapi_pydantic import OpenAPI, MediaType, RequestBody, Responses
 
 from api_scoring_app.core import IScorer
-from api_scoring_app.core.types import ScoringReport, Issue, IssueSeverity
+from api_scoring_app.core.types import ScoringReport, Issue, IssueSeverity, ParsedSpecification
 
 @dataclass
 class ExamplesSubscorer:
@@ -11,28 +11,16 @@ class ExamplesSubscorer:
     Examples & Samples subscorer for OpenAPI specification.
     """
 
-    subscorers: list[IScorer] = field(default_factory=list)
+    parsed_specification: ParsedSpecification
 
     _missing_request_examples: list[list[str]] = field(init=False, default_factory=list)
     _missing_response_examples: list[list[str]] = field(init=False, default_factory=list)
 
-    MAJOR_METHODS = {'get', 'post', 'put', 'delete'}
-
-    def score_spec(self, spec: OpenAPI) -> ScoringReport:
+    def score_spec(self) -> ScoringReport:
         scoring_report = ScoringReport()
         weight: float = 1.0
 
-        # check if paths object exists
-        if not spec.paths:
-            scoring_report.add_issue(Issue(
-                message="'paths' is missing from specification.",
-                severity=IssueSeverity.CRITICAL,
-                suggestion="Add 'paths' to the specification."
-            ))
-            scoring_report.weight = 0.0
-            return scoring_report
-
-        self._check_examples(spec)
+        self._populate_fields()
 
         # missing request examples
         for path in self._missing_request_examples:
@@ -60,64 +48,40 @@ class ExamplesSubscorer:
         scoring_report.weight = weight
 
         return scoring_report
+    
+    def _populate_fields(self) -> None:
+        for path, request_body in self.parsed_specification.examples.request_bodies:
+            if request_body.required:
+                has_example = False
 
+                for _, media_type in request_body.content.items():
+                    if self._has_examples(media_type):
+                        has_example = True
+                        break
+
+                if not has_example:
+                    self._missing_request_examples.append(path)
+
+        for path, response in self.parsed_specification.examples.responses:
+            if response.content is None:
+                continue
+
+            has_example = False
+            
+            for _, media_type in response.content.items():
+                if self._has_examples(media_type):
+                    has_example = True
+                    break
+                            
+            if not has_example:
+                self._missing_response_examples.append(path)
+    
     def _is_major_path(self, path: str) -> bool:
         """
         Path is major if it's a root-level resource (`/users`)
         """
         path_parts = [p for p in path.strip('/').split('/') if not p.startswith('{')]
         return len(path_parts) == 1
-
-    def _check_examples(self, spec: OpenAPI) -> None:
-        paths = spec.paths
-        if paths is None:
-            return
-
-        for path_name, path_item in paths.items():
-            if not self._is_major_path(path_name):
-                continue
-
-            for operation_name in self.MAJOR_METHODS:
-                operation = getattr(path_item, operation_name, None)
-                if operation is None:
-                    continue
-
-                path_prefix = ["paths", path_name, operation_name]
-
-                # request examples
-                if operation.requestBody is not None:
-                    request_body: RequestBody = operation.requestBody
-
-                    # check if request body is required
-                    if request_body.required:
-                        has_example = False
-
-                        for _, media_type in request_body.content.items():
-                            if self._has_examples(media_type):
-                                has_example = True
-                                break
-
-                        if not has_example:
-                            self._missing_request_examples.append(path_prefix + ["requestBody"])
-
-                # response examples
-                if operation.responses:
-                    responses: Responses = operation.responses
-                    
-                    for status_code, response in responses.items():
-                        if response.content is None:
-                            continue
-
-                        has_example = False
-                        response_path = path_prefix + ["responses", status_code]
-                        
-                        for _, media_type in response.content.items():
-                            if self._has_examples(media_type):
-                                has_example = True
-                                break
-                            
-                        if not has_example:
-                            self._missing_response_examples.append(response_path)
     
     def _has_examples(self, media_type: MediaType) -> bool:
         """
@@ -130,5 +94,3 @@ class ExamplesSubscorer:
 
         return condition
     
-    def add_subscorer(self, subscorer: IScorer) -> None:
-        self.subscorers.append(subscorer) 

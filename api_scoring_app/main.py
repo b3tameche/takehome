@@ -8,7 +8,7 @@ from api_scoring_app.infra.utils.spec_loader import SpecLoaderFactory
 from api_scoring_app.infra.utils.spec_loader import SpecLoaderException
 from api_scoring_app.infra.validators import PydanticValidator
 from api_scoring_app.infra.subscorers import SchemaSubscorer, DescriptionSubscorer, PathsSubscorer, ResponseCodesSubscorer, ExamplesSubscorer, SecuritySubscorer, MiscSubscorer
-from openapi_pydantic import PathItem, Operation, Parameter, RequestBody, Response
+from api_scoring_app.infra.parser.parser import Parser
 
 @click.command()
 @click.argument("spec_source", type=click.Path(exists=True, dir_okay=False), required=True)
@@ -47,47 +47,34 @@ def main(spec_source: str, format: str, output_file: Optional[str]):
     
     spec_model = validation_result.specification
 
-    # Score the spec
-    schema_report = SchemaSubscorer().score_spec(spec_model)
-    
-    # Create DescriptionSubscorer with specific types to check
-    description_types = (PathItem, Operation, Parameter, RequestBody, Response)
-    description_report = DescriptionSubscorer(types_to_check=description_types).score_spec(spec_model)
-    
-    # Score paths and operations
-    paths_report = PathsSubscorer().score_spec(spec_model)
-    
-    # Score response codes
-    response_codes_report = ResponseCodesSubscorer().score_spec(spec_model)
-    
-    # Score examples and samples
-    examples_report = ExamplesSubscorer().score_spec(spec_model)
-    
-    # Score security
-    security_report = SecuritySubscorer().score_spec(spec_model)
-    
-    # Score miscellaneous best practices
-    misc_report = MiscSubscorer().score_spec(spec_model)
+    # Parse the spec
+    parsed_data = Parser().parse(spec_model)
+    # pprint(parsed_data)
 
-    # Print reports
-    print("Schema Report:")
-    pprint(schema_report)
-    
-    print("\nDescription Report:")
-    pprint(description_report)
-    
-    print("\nPaths Report:")
-    pprint(paths_report)
-    
-    print("\nResponse Codes Report:")
-    pprint(response_codes_report)
-    
-    print("\nExamples Report:")
-    pprint(examples_report)
-    
-    print("\nSecurity Report:")
+    # # description
+    # description_report = DescriptionSubscorer(parsed_data).score_spec()
+    # pprint(description_report)
+
+    # # examples
+    # examples_report = ExamplesSubscorer(parsed_data).score_spec()
+    # pprint(examples_report)
+
+    # # misc
+    # misc_report = MiscSubscorer(parsed_data).score_spec()
+    # pprint(misc_report)
+
+    # paths
+    # paths_report = PathsSubscorer(parsed_data).score_spec()
+    # pprint(paths_report)
+
+    # response codes
+    # response_codes_report = ResponseCodesSubscorer(parsed_data).score_spec()
+    # pprint(response_codes_report)
+
+    # schemas
+    # schemas_report = SchemaSubscorer(parsed_data).score_spec()
+    # pprint(schemas_report)
+
+    # security
+    security_report = SecuritySubscorer(parsed_data).score_spec()
     pprint(security_report)
-    
-    print("\nMiscellaneous Best Practices Report:")
-    pprint(misc_report)
-

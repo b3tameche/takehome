@@ -1,11 +1,8 @@
 from dataclasses import dataclass, field
-from typing import Any
 
-from openapi_pydantic import OpenAPI, SecurityScheme, OAuthFlows, SecurityRequirement
-from pydantic import BaseModel
+from openapi_pydantic import SecurityScheme, OAuthFlows
 
-from api_scoring_app.core import IScorer
-from api_scoring_app.core.types import ScoringReport, Issue, IssueSeverity, WrappedSecurityRequirement, MissingFieldError
+from api_scoring_app.core.types import ScoringReport, Issue, IssueSeverity, WrappedSecurityRequirement, MissingFieldError, ParsedSpecification
 
 @dataclass
 class SecuritySubscorer:
@@ -13,24 +10,20 @@ class SecuritySubscorer:
     Security subscorer for OpenAPI specification.
     """
 
-    subscorers: list[IScorer] = field(default_factory=list) 
-
-    _defined_schemes: list[WrappedSecurityRequirement] = field(init=False, default_factory=list)
-    _referenced_schemes: list[WrappedSecurityRequirement] = field(init=False, default_factory=list)
-    _operation_referenced_schemes: list[WrappedSecurityRequirement] = field(init=False, default_factory=list)
+    parsed_specification: ParsedSpecification = field(default_factory=ParsedSpecification)
 
     _security_scheme_errors: list[MissingFieldError] = field(init=False, default_factory=list)
     _unused_security_schemes: list[WrappedSecurityRequirement] = field(init=False, default_factory=list)
     _undefined_security_schemes: list[WrappedSecurityRequirement] = field(init=False, default_factory=list)
 
-    def score_spec(self, spec: OpenAPI) -> ScoringReport:
+    def score_spec(self) -> ScoringReport:
         scoring_report = ScoringReport()
 
-        self._recursive_security_schema_search(spec)
+        # self._recursive_security_schema_search(spec)
         self._populate_security_info()
 
         # security schemes are not defined
-        if not self._defined_schemes:
+        if not self.parsed_specification.security.defined_schemes:
             scoring_report.add_issue(
                 Issue(
                     severity=IssueSeverity.ZERO,
@@ -88,53 +81,17 @@ class SecuritySubscorer:
         return scoring_report
     
     def _populate_security_info(self) -> None:
-        self._unused_security_schemes = [scheme for scheme in self._defined_schemes if scheme not in self._referenced_schemes]
-        
-        undefined_from_referenced = [scheme for scheme in self._referenced_schemes if scheme not in self._defined_schemes]
-        undefined_from_operation_referenced = [scheme for scheme in self._operation_referenced_schemes if scheme not in self._defined_schemes]
-        self._undefined_security_schemes = undefined_from_referenced + undefined_from_operation_referenced
-    
-    def _recursive_security_schema_search(self, obj: Any, path: list[str] = []) -> None:
-        if isinstance(obj, SecurityScheme):
-            scheme_name = path[-1]
-            self._defined_schemes.append(WrappedSecurityRequirement(scheme_name, path))
-
-            validation_errors = self._validate_security_scheme(obj, path)
+        for path, scheme in self.parsed_specification.security.schemes:
+            validation_errors = self._validate_security_scheme(scheme, path)
             if validation_errors:
                 self._security_scheme_errors.extend(validation_errors)
-        elif len(path) > 0 and obj is not None:
-            if path[0] == 'security':
-                referenced_schemes: list[SecurityRequirement] = obj
 
-                for scheme in referenced_schemes:
-                    scheme_name = list(scheme.keys())[0]
-                    scheme_path = path + [scheme_name]
-                    self._referenced_schemes.append(WrappedSecurityRequirement(scheme_name, scheme_path))
+        self._unused_security_schemes = [scheme for scheme in self.parsed_specification.security.defined_schemes if scheme not in self.parsed_specification.security.referenced_schemes]
+        
+        undefined_from_referenced = [scheme for scheme in self.parsed_specification.security.referenced_schemes if scheme not in self.parsed_specification.security.defined_schemes]
+        undefined_from_operation_referenced = [scheme for scheme in self.parsed_specification.security.operation_referenced_schemes if scheme not in self.parsed_specification.security.defined_schemes]
+        self._undefined_security_schemes = undefined_from_referenced + undefined_from_operation_referenced
 
-                return # stop recursion here, no need to go deeper
-            elif path[-1] == 'security': # it comes from operation object
-                
-                referenced_schemes: list[SecurityRequirement] = obj
-
-                for scheme in referenced_schemes:
-                    scheme_name = list(scheme.keys())[0]
-                    scheme_path = path + [scheme_name]
-                    self._operation_referenced_schemes.append(WrappedSecurityRequirement(scheme_name, scheme_path))
-                return # stop recursion here, no need to go deeper
-
-        # recursion
-        if isinstance(obj, dict): # in depth
-            for key, value in obj.items():
-                self._recursive_security_schema_search(value, path + [key])
-
-        elif isinstance(obj, (list, tuple)): # in width
-            for i, item in enumerate(obj):
-                self._recursive_security_schema_search(item, path + [str(i)])
-
-        elif isinstance(obj, BaseModel):
-            for field_name, field_value in obj.__dict__.items():
-                if not field_name.startswith('_'): # skip private fields
-                    self._recursive_security_schema_search(field_value, path + [field_name])
 
     def _validate_security_scheme(self, scheme: SecurityScheme, path: list[str]) -> list[MissingFieldError]:
         """
@@ -264,6 +221,3 @@ class SecuritySubscorer:
                 ))
 
         return missing_field_errors
-
-    def add_subscorer(self, subscorer: IScorer) -> None:
-        self.subscorers.append(subscorer)
