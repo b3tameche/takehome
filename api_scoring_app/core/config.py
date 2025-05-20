@@ -39,3 +39,10 @@ class Config:
 
     # general
     OPERATIONS = ('get', 'put', 'post', 'delete', 'patch', 'head', 'options', 'trace')
+
+    # severity multipliers
+    MULT_SEVERITY_LOW: float = 0.95
+    MULT_SEVERITY_MEDIUM: float = 0.85
+    MULT_SEVERITY_HIGH: float = 0.7
+    MULT_SEVERITY_CRITICAL: float = 0.5
+    MULT_SEVERITY_ZERO: float = 0.0

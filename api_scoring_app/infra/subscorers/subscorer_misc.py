@@ -10,8 +10,10 @@ class MiscSubscorer(BaseScorer):
     Miscellaneous Best Practices subscorer for OpenAPI specification.
     """
 
+    points: float
+
     def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
-        scoring_report = ScoringReport(Config.MISC_SUBSCORER_NAME)
+        scoring_report = ScoringReport(Config.MISC_SUBSCORER_NAME, self.points)
 
         # versioning
         has_versioning = self._has_versioning(parsed_specification)

@@ -8,6 +8,7 @@ class ResponseCodesSubscorer(BaseScorer):
     """
     Response Codes subscorer for OpenAPI specification.
     """
+    points: float
 
     # _missing_responses: list[list[str]] = field(init=False, default_factory=list)
     _missing_success_responses: list[list[str]] = field(init=False, default_factory=list)
@@ -15,49 +16,72 @@ class ResponseCodesSubscorer(BaseScorer):
     _empty_content_responses: list[list[str]] = field(init=False, default_factory=list)
 
     def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
-        scoring_report = ScoringReport(Config.RESPONSE_CODES_SUBSCORER_NAME)
+        scoring_report = ScoringReport(Config.RESPONSE_CODES_SUBSCORER_NAME, self.points)
 
         self._populate_fields(parsed_specification)
 
         # missing responses
+        issues = []
         for missing_response in parsed_specification.response_codes.missing_responses:
             path_as_string = " -> ".join(missing_response)
-            scoring_report.add_issue(Issue(
+            issues.append(Issue(
                 message=f"Missing responses definition at: {path_as_string}",
                 path=path_as_string,
                 severity=IssueSeverity.MEDIUM,
                 suggestion="Add a responses definition to this operation."
             ))
+        
+        scoring_report.bulk_add_issues(
+            issues=issues,
+            severity=IssueSeverity.MEDIUM
+        )
 
         # missing success responses
+        issues = []
         for path in self._missing_success_responses:
             path_as_string = " -> ".join(path)
-            scoring_report.add_issue(Issue(
+            issues.append(Issue(
                 message=f"Missing success response code at: {path_as_string}",
                 path=path_as_string,
                 severity=IssueSeverity.HIGH,
                 suggestion=f"Add at least one success response to this operation."
             ))
+        
+        scoring_report.bulk_add_issues(
+            issues=issues,
+            severity=IssueSeverity.HIGH
+        )
 
         # missing error responses
+        issues = []
         for path in self._missing_error_responses:
             path_as_string = " -> ".join(path)
-            scoring_report.add_issue(Issue(
+            issues.append(Issue(
                 message=f"Missing error response code at: {path_as_string}",
                 path=path_as_string,
                 severity=IssueSeverity.MEDIUM,
                 suggestion=f"Add appropriate error responses to this operation."
             ))
+        
+        scoring_report.bulk_add_issues(
+            issues=issues,
+            severity=IssueSeverity.MEDIUM
+        )
 
         # empty content
         for path in self._empty_content_responses:
             path_as_string = " -> ".join(path)
-            scoring_report.add_issue(Issue(
+            issues.append(Issue(
                 message=f"Response has no content defined at: {path_as_string}",
                 path=path_as_string,
                 severity=IssueSeverity.MEDIUM,
                 suggestion=f"Add a content definition for this response."
             ))
+
+        scoring_report.bulk_add_issues(
+            issues=issues,
+            severity=IssueSeverity.MEDIUM
+        )
 
         return [scoring_report]
     

@@ -11,33 +11,45 @@ class ExamplesSubscorer(BaseScorer):
     Examples & Samples subscorer for OpenAPI specification.
     """
 
+    points: float
+
     _missing_request_examples: list[list[str]] = field(init=False, default_factory=list)
     _missing_response_examples: list[list[str]] = field(init=False, default_factory=list)
 
     def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
-        scoring_report = ScoringReport(Config.EXAMPLES_SUBSCORER_NAME)
+        scoring_report = ScoringReport(Config.EXAMPLES_SUBSCORER_NAME, self.points)
 
         self._populate_fields(parsed_specification)
 
         # missing request examples
+        issues = []
         for path in self._missing_request_examples:
             path_as_string = " -> ".join(path)
-            scoring_report.add_issue(Issue(
+            issues.append(Issue(
                 message=f"Missing request example at major endpoint: {path_as_string}",
                 path=path_as_string,
                 severity=IssueSeverity.MEDIUM,
                 suggestion="Add an example for the request body."
             ))
+        scoring_report.bulk_add_issues(
+            issues=issues,
+            severity=IssueSeverity.MEDIUM
+        )
 
         # missing response examples
+        issues = []
         for path in self._missing_response_examples:
             path_as_string = " -> ".join(path)
-            scoring_report.add_issue(Issue(
+            issues.append(Issue(
                 message=f"Missing response example at major endpoint: {path_as_string}",
                 path=path_as_string,
                 severity=IssueSeverity.MEDIUM,
                 suggestion="Add examples for responses."
             ))
+        scoring_report.bulk_add_issues(
+            issues=issues,
+            severity=IssueSeverity.MEDIUM
+        )
 
         return [scoring_report]
     

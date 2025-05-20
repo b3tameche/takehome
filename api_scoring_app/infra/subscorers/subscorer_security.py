@@ -12,13 +12,14 @@ class SecuritySubscorer(BaseScorer):
     """
     Security subscorer for OpenAPI specification.
     """
-
+    points: float
+    
     _security_scheme_errors: list[MissingFieldError] = field(init=False, default_factory=list)
     _unused_security_schemes: list[WrappedSecurityRequirement] = field(init=False, default_factory=list)
     _undefined_security_schemes: list[WrappedSecurityRequirement] = field(init=False, default_factory=list)
 
     def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
-        scoring_report = ScoringReport(Config.SECURITY_SUBSCORER_NAME)
+        scoring_report = ScoringReport(Config.SECURITY_SUBSCORER_NAME, self.points)
 
         # self._recursive_security_schema_search(spec)
         self._populate_security_info(parsed_specification)

@@ -12,6 +12,7 @@ class PathsSubscorer(BaseScorer):
     """
     Paths & Operations subscorer for OpenAPI specification.
     """
+    points: float
 
     _overlapping_paths: list[Tuple[str, str]] = field(init=False, default_factory=list)
     _inconsistent_namings: list[Tuple[str, str]] = field(init=False, default_factory=list)
@@ -24,27 +25,39 @@ class PathsSubscorer(BaseScorer):
     })
 
     def score_spec(self, parsed_specification: ParsedSpecification) -> list[ScoringReport]:
-        scoring_report = ScoringReport(Config.PATHS_SUBSCORER_NAME)
+        scoring_report = ScoringReport(Config.PATHS_SUBSCORER_NAME, self.points)
         
         # populate necessary fields
         self._check_paths(parsed_specification)
 
         # Report CRUD violations
+        issues = []
         for path, operation in self._crud_violations:
-            scoring_report.add_issue(Issue(
+            issues.append(Issue(
                 message=f"CRUD convention violation at '{path}' for operation '{operation}'",
                 path=f"paths -> {path} -> {operation}",
                 severity=IssueSeverity.LOW,
                 suggestion="'GET' for retrieval, 'POST' for creation, PUT/PATCH for updates, DELETE for removal."
             ))
+        
+        scoring_report.bulk_add_issues(
+            issues=issues,
+            severity=IssueSeverity.LOW
+        )
 
         # overlapping paths
+        issues = []
         for path1, path2 in self._overlapping_paths:
-            scoring_report.add_issue(Issue(
+            issues.append(Issue(
                 message=f"Overlapping paths: '{path1}' and '{path2}'",
                 severity=IssueSeverity.HIGH,
                 suggestion="Remove one of the paths."
             ))
+        
+        scoring_report.bulk_add_issues(
+            issues=issues,
+            severity=IssueSeverity.HIGH
+        )
 
         # inconsistent naming
         frequent_naming_convention: NamingConvention = NamingConvention.KEBAB
@@ -53,12 +66,18 @@ class PathsSubscorer(BaseScorer):
         
         suggestion = f"Stick with '{frequent_naming_convention.value}', you've got more of them in your spec."
 
+        issues = []
         for path1, path2 in self._inconsistent_namings:
-            scoring_report.add_issue(Issue(
+            issues.append(Issue(
                 message=f"Inconsistent naming between '{path1}' and '{path2}'",
                 severity=IssueSeverity.MEDIUM,
                 suggestion=suggestion
             ))
+        
+        scoring_report.bulk_add_issues(
+            issues=issues,
+            severity=IssueSeverity.MEDIUM
+        )
 
         return [scoring_report]
     
