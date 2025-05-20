@@ -33,7 +33,7 @@ class ResponseCodesSubscorer(BaseScorer):
         
         scoring_report.bulk_add_issues(
             issues=issues,
-            severity=IssueSeverity.MEDIUM
+            severity=IssueSeverity.LOW
         )
 
         # missing success responses
@@ -49,7 +49,7 @@ class ResponseCodesSubscorer(BaseScorer):
         
         scoring_report.bulk_add_issues(
             issues=issues,
-            severity=IssueSeverity.HIGH
+            severity=IssueSeverity.MEDIUM
         )
 
         # missing error responses
@@ -74,13 +74,13 @@ class ResponseCodesSubscorer(BaseScorer):
             issues.append(Issue(
                 message=f"Response has no content defined at: {path_as_string}",
                 path=path_as_string,
-                severity=IssueSeverity.MEDIUM,
+                severity=IssueSeverity.LOW,
                 suggestion=f"Add a content definition for this response."
             ))
 
         scoring_report.bulk_add_issues(
             issues=issues,
-            severity=IssueSeverity.MEDIUM
+            severity=IssueSeverity.LOW
         )
 
         return [scoring_report]

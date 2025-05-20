@@ -76,7 +76,7 @@ class PathsSubscorer(BaseScorer):
         
         scoring_report.bulk_add_issues(
             issues=issues,
-            severity=IssueSeverity.MEDIUM
+            severity=IssueSeverity.LOW
         )
 
         return [scoring_report]

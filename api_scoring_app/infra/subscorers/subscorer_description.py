@@ -21,13 +21,13 @@ class DescriptionSubscorer(BaseScorer):
             issues.append(Issue(
                 message=f"Missing description at: {path_as_string}",
                 path=path_as_string,
-                severity=IssueSeverity.MEDIUM,
+                severity=IssueSeverity.LOW,
                 suggestion="Add a meaningful description."
             ))
         
         scoring_report.bulk_add_issues(
             issues=issues,
-            severity=IssueSeverity.MEDIUM
+            severity=IssueSeverity.LOW
         )
             
         # check for short descriptions

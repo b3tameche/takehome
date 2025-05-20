@@ -28,7 +28,7 @@ class SecuritySubscorer(BaseScorer):
         if not parsed_specification.security.defined_schemes:
             scoring_report.add_issue(
                 Issue(
-                    severity=IssueSeverity.ZERO,
+                    severity=IssueSeverity.CRITICAL,
                     message="Security schemes are not defined",
                     suggestion="Define at least one security scheme"
                 )
@@ -47,7 +47,7 @@ class SecuritySubscorer(BaseScorer):
                 ))
             scoring_report.bulk_add_issues(
                 issues=issues,
-                severity=IssueSeverity.ZERO
+                severity=IssueSeverity.CRITICAL
             )
 
         # security schemes are correctly defined, but not referenced
@@ -62,7 +62,7 @@ class SecuritySubscorer(BaseScorer):
             ))
         scoring_report.bulk_add_issues(
             issues=issues,
-            severity=IssueSeverity.HIGH
+            severity=IssueSeverity.MEDIUM
         )
 
         # security schemes are referenced, but not defined
@@ -77,7 +77,7 @@ class SecuritySubscorer(BaseScorer):
             ))
         scoring_report.bulk_add_issues(
             issues=issues,
-            severity=IssueSeverity.MEDIUM
+            severity=IssueSeverity.HIGH
         )
 
         return [scoring_report]

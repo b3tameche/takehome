@@ -69,9 +69,11 @@ class Parser:
             self.parsed_specification.misc.servers_defined.append(obj)
         elif len(path) > 0 and path[-1] == 'paths' and obj is not None:
             self.parsed_specification.misc.paths_defined.append(list(obj.keys())[0].strip('/'))
-        elif len(path) > 1 and path[-1] == 'tags' and obj is not None: # tags from operation object
-            for tag in obj:
-                self.parsed_specification.misc.tags_from_operations.append(WrappedTag(tag, path))
+        elif len(path) > 2 and path[-1] == 'tags' and obj is not None:
+            op = path[-2]
+            if self._is_operation(op): # only if it's in an operation object
+                for tag in obj:
+                    self.parsed_specification.misc.tags_from_operations.append(WrappedTag(tag, path))
 
 
     def _populate_paths(self, obj: Any, path: list[str] = []):
@@ -129,7 +131,9 @@ class Parser:
                 return True # stop recursion here, no need to go deeper
 
         return False
-
+    
+    def _is_operation(self, keyword: str) -> bool:
+        return keyword in self.config.OPERATIONS
 
     def _get_operations(self, path_item: PathItem) -> List[str]:
         return [op for op in path_item.model_fields_set if op in self.config.OPERATIONS]

@@ -41,7 +41,7 @@ class ExamplesSubscorer(BaseScorer):
         for path in self._missing_response_examples:
             path_as_string = " -> ".join(path)
             issues.append(Issue(
-                message=f"Missing response example at major endpoint: {path_as_string}",
+                message=f"Missing response example at endpoint: {path_as_string}",
                 path=path_as_string,
                 severity=IssueSeverity.MEDIUM,
                 suggestion="Add examples for responses."

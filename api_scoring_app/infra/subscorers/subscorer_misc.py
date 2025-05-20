@@ -45,7 +45,7 @@ class MiscSubscorer(BaseScorer):
             scoring_report.add_issue(Issue(
                 message="Tags are not consistently referenced from operations",
                 severity=IssueSeverity.MEDIUM,
-                suggestion=f"Define these tags on root level: {', '.join(self.parsed_specification.misc.undefined_tags)}"
+                suggestion=f"Define these tags on root level: {', '.join(parsed_specification.misc.undefined_tags)}"
             ))
 
         return [scoring_report]

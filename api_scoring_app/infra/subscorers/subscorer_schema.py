@@ -45,7 +45,7 @@ class SchemaSubscorer(BaseScorer):
             ))
         scoring_report.bulk_add_issues(
             issues=issues,
-            severity=IssueSeverity.MEDIUM
+            severity=IssueSeverity.HIGH
         )
             
         return [scoring_report]

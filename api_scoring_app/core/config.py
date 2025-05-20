@@ -11,7 +11,7 @@ class Config:
     # description subscorer
     DESCRIPTION_SUBSCORER_NAME: str = "Descriptions & Documentation"
     DESCRIPTION_TYPES_TO_CHECK: Tuple[Type, ...] = field(default_factory=lambda: (Operation, Parameter, RequestBody, Response))
-    DESCRIPTION_MIN_DESCRIPTION_LENGTH: int = 15
+    DESCRIPTION_MIN_DESCRIPTION_LENGTH: int = 5
 
     # examples subscorer
     EXAMPLES_SUBSCORER_NAME: str = "Examples & Samples"
