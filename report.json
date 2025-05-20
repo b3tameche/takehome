@@ -1,0 +1,452 @@
+{
+  "total_score": 84.1,
+  "max_total_Score": 100,
+  "overall_grade": "B",
+  "severity_counts": {
+    "LOW": 17,
+    "MEDIUM": 34,
+    "HIGH": 14,
+    "CRITICAL": 0,
+    "ZERO": 0
+  },
+  "reports": [
+    {
+      "subscorer": "Schema & Types",
+      "score": 20,
+      "max_score": 20,
+      "issues": []
+    },
+    {
+      "subscorer": "Descriptions & Documentation",
+      "score": 18.1,
+      "max_score": 20,
+      "issues": [
+        {
+          "message": "Missing description at: paths -> /pet/{petId}/uploadImage -> post -> requestBody",
+          "severity": "LOW",
+          "path": "paths -> /pet/{petId}/uploadImage -> post -> requestBody",
+          "suggestion": "Add a meaningful description."
+        },
+        {
+          "message": "Missing description at: paths -> /store/order -> post -> requestBody",
+          "severity": "LOW",
+          "path": "paths -> /store/order -> post -> requestBody",
+          "suggestion": "Add a meaningful description."
+        },
+        {
+          "message": "Missing description at: paths -> /user/createWithList -> post -> requestBody",
+          "severity": "LOW",
+          "path": "paths -> /user/createWithList -> post -> requestBody",
+          "suggestion": "Add a meaningful description."
+        },
+        {
+          "message": "Description too short at: paths -> /pet/{petId} -> post",
+          "severity": "LOW",
+          "path": "paths -> /pet/{petId} -> post",
+          "suggestion": "Expand description to be at least 5 characters."
+        },
+        {
+          "message": "Description too short at: paths -> /pet/{petId} -> delete -> parameters -> 0",
+          "severity": "LOW",
+          "path": "paths -> /pet/{petId} -> delete -> parameters -> 0",
+          "suggestion": "Expand description to be at least 5 characters."
+        },
+        {
+          "message": "Description too short at: paths -> /pet/{petId}/uploadImage -> post",
+          "severity": "LOW",
+          "path": "paths -> /pet/{petId}/uploadImage -> post",
+          "suggestion": "Expand description to be at least 5 characters."
+        },
+        {
+          "message": "Description too short at: paths -> /user/login -> get",
+          "severity": "LOW",
+          "path": "paths -> /user/login -> get",
+          "suggestion": "Expand description to be at least 5 characters."
+        },
+        {
+          "message": "Description too short at: paths -> /user/logout -> get",
+          "severity": "LOW",
+          "path": "paths -> /user/logout -> get",
+          "suggestion": "Expand description to be at least 5 characters."
+        },
+        {
+          "message": "Description too short at: paths -> /user/{username} -> get",
+          "severity": "LOW",
+          "path": "paths -> /user/{username} -> get",
+          "suggestion": "Expand description to be at least 5 characters."
+        }
+      ]
+    },
+    {
+      "subscorer": "Paths & Operations",
+      "score": 10.5,
+      "max_score": 15,
+      "issues": [
+        {
+          "message": "Overlapping paths: '/pet/findByStatus' and '/pet/{petId}'",
+          "severity": "HIGH",
+          "path": "N/A",
+          "suggestion": "Remove one of the paths."
+        },
+        {
+          "message": "Overlapping paths: '/pet/findByTags' and '/pet/{petId}'",
+          "severity": "HIGH",
+          "path": "N/A",
+          "suggestion": "Remove one of the paths."
+        },
+        {
+          "message": "Overlapping paths: '/user/createWithList' and '/user/{username}'",
+          "severity": "HIGH",
+          "path": "N/A",
+          "suggestion": "Remove one of the paths."
+        },
+        {
+          "message": "Overlapping paths: '/user/login' and '/user/{username}'",
+          "severity": "HIGH",
+          "path": "N/A",
+          "suggestion": "Remove one of the paths."
+        },
+        {
+          "message": "Overlapping paths: '/user/logout' and '/user/{username}'",
+          "severity": "HIGH",
+          "path": "N/A",
+          "suggestion": "Remove one of the paths."
+        }
+      ]
+    },
+    {
+      "subscorer": "Response Codes",
+      "score": 10.3,
+      "max_score": 15,
+      "issues": [
+        {
+          "message": "Missing success response code at: paths -> /pet/{petId} -> post -> responses",
+          "severity": "HIGH",
+          "path": "paths -> /pet/{petId} -> post -> responses",
+          "suggestion": "Add at least one success response to this operation."
+        },
+        {
+          "message": "Missing success response code at: paths -> /pet/{petId} -> delete -> responses",
+          "severity": "HIGH",
+          "path": "paths -> /pet/{petId} -> delete -> responses",
+          "suggestion": "Add at least one success response to this operation."
+        },
+        {
+          "message": "Missing success response code at: paths -> /store/order/{orderId} -> delete -> responses",
+          "severity": "HIGH",
+          "path": "paths -> /store/order/{orderId} -> delete -> responses",
+          "suggestion": "Add at least one success response to this operation."
+        },
+        {
+          "message": "Missing success response code at: paths -> /user -> post -> responses",
+          "severity": "HIGH",
+          "path": "paths -> /user -> post -> responses",
+          "suggestion": "Add at least one success response to this operation."
+        },
+        {
+          "message": "Missing success response code at: paths -> /user/logout -> get -> responses",
+          "severity": "HIGH",
+          "path": "paths -> /user/logout -> get -> responses",
+          "suggestion": "Add at least one success response to this operation."
+        },
+        {
+          "message": "Missing success response code at: paths -> /user/{username} -> put -> responses",
+          "severity": "HIGH",
+          "path": "paths -> /user/{username} -> put -> responses",
+          "suggestion": "Add at least one success response to this operation."
+        },
+        {
+          "message": "Missing success response code at: paths -> /user/{username} -> delete -> responses",
+          "severity": "HIGH",
+          "path": "paths -> /user/{username} -> delete -> responses",
+          "suggestion": "Add at least one success response to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /pet -> put -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet -> put -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /pet -> post -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet -> post -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /pet/findByStatus -> get -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet/findByStatus -> get -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /pet/findByTags -> get -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet/findByTags -> get -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /pet/{petId} -> get -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet/{petId} -> get -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /pet/{petId} -> post -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet/{petId} -> post -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /pet/{petId} -> delete -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet/{petId} -> delete -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /pet/{petId}/uploadImage -> post -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet/{petId}/uploadImage -> post -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /store/inventory -> get -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /store/inventory -> get -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /store/order -> post -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /store/order -> post -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /store/order/{orderId} -> get -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /store/order/{orderId} -> get -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /store/order/{orderId} -> delete -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /store/order/{orderId} -> delete -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /user -> post -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /user -> post -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /user/createWithList -> post -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /user/createWithList -> post -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /user/login -> get -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /user/login -> get -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /user/logout -> get -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /user/logout -> get -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /user/{username} -> get -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /user/{username} -> get -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /user/{username} -> put -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /user/{username} -> put -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Missing error response code at: paths -> /user/{username} -> delete -> responses",
+          "severity": "MEDIUM",
+          "path": "paths -> /user/{username} -> delete -> responses",
+          "suggestion": "Add appropriate error responses to this operation."
+        },
+        {
+          "message": "Response has no content defined at: paths -> /pet -> put -> responses -> 405",
+          "severity": "LOW",
+          "path": "paths -> /pet -> put -> responses -> 405",
+          "suggestion": "Add a content definition for this response."
+        },
+        {
+          "message": "Response has no content defined at: paths -> /pet -> post -> responses -> 405",
+          "severity": "LOW",
+          "path": "paths -> /pet -> post -> responses -> 405",
+          "suggestion": "Add a content definition for this response."
+        },
+        {
+          "message": "Response has no content defined at: paths -> /pet/{petId} -> post -> responses -> 405",
+          "severity": "LOW",
+          "path": "paths -> /pet/{petId} -> post -> responses -> 405",
+          "suggestion": "Add a content definition for this response."
+        },
+        {
+          "message": "Response has no content defined at: paths -> /store/order -> post -> responses -> 405",
+          "severity": "LOW",
+          "path": "paths -> /store/order -> post -> responses -> 405",
+          "suggestion": "Add a content definition for this response."
+        },
+        {
+          "message": "Response has no content defined at: paths -> /user/createWithList -> post -> responses -> default",
+          "severity": "LOW",
+          "path": "paths -> /user/createWithList -> post -> responses -> default",
+          "suggestion": "Add a content definition for this response."
+        },
+        {
+          "message": "Response has no content defined at: paths -> /user/logout -> get -> responses -> default",
+          "severity": "LOW",
+          "path": "paths -> /user/logout -> get -> responses -> default",
+          "suggestion": "Add a content definition for this response."
+        },
+        {
+          "message": "Response has no content defined at: paths -> /user/{username} -> put -> responses -> default",
+          "severity": "LOW",
+          "path": "paths -> /user/{username} -> put -> responses -> default",
+          "suggestion": "Add a content definition for this response."
+        }
+      ]
+    },
+    {
+      "subscorer": "Examples & Samples",
+      "score": 7.2,
+      "max_score": 10,
+      "issues": [
+        {
+          "message": "Missing request example at major endpoint: paths -> /pet -> put -> requestBody",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet -> put -> requestBody",
+          "suggestion": "Add an example for the request body."
+        },
+        {
+          "message": "Missing request example at major endpoint: paths -> /pet -> post -> requestBody",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet -> post -> requestBody",
+          "suggestion": "Add an example for the request body."
+        },
+        {
+          "message": "Missing response example at endpoint: paths -> /pet -> put -> responses -> 200",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet -> put -> responses -> 200",
+          "suggestion": "Add examples for responses."
+        },
+        {
+          "message": "Missing response example at endpoint: paths -> /pet -> post -> responses -> 200",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet -> post -> responses -> 200",
+          "suggestion": "Add examples for responses."
+        },
+        {
+          "message": "Missing response example at endpoint: paths -> /pet/findByStatus -> get -> responses -> 200",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet/findByStatus -> get -> responses -> 200",
+          "suggestion": "Add examples for responses."
+        },
+        {
+          "message": "Missing response example at endpoint: paths -> /pet/findByTags -> get -> responses -> 200",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet/findByTags -> get -> responses -> 200",
+          "suggestion": "Add examples for responses."
+        },
+        {
+          "message": "Missing response example at endpoint: paths -> /pet/{petId} -> get -> responses -> 200",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet/{petId} -> get -> responses -> 200",
+          "suggestion": "Add examples for responses."
+        },
+        {
+          "message": "Missing response example at endpoint: paths -> /pet/{petId}/uploadImage -> post -> responses -> 200",
+          "severity": "MEDIUM",
+          "path": "paths -> /pet/{petId}/uploadImage -> post -> responses -> 200",
+          "suggestion": "Add examples for responses."
+        },
+        {
+          "message": "Missing response example at endpoint: paths -> /store/inventory -> get -> responses -> 200",
+          "severity": "MEDIUM",
+          "path": "paths -> /store/inventory -> get -> responses -> 200",
+          "suggestion": "Add examples for responses."
+        },
+        {
+          "message": "Missing response example at endpoint: paths -> /store/order -> post -> responses -> 200",
+          "severity": "MEDIUM",
+          "path": "paths -> /store/order -> post -> responses -> 200",
+          "suggestion": "Add examples for responses."
+        },
+        {
+          "message": "Missing response example at endpoint: paths -> /store/order/{orderId} -> get -> responses -> 200",
+          "severity": "MEDIUM",
+          "path": "paths -> /store/order/{orderId} -> get -> responses -> 200",
+          "suggestion": "Add examples for responses."
+        },
+        {
+          "message": "Missing response example at endpoint: paths -> /user -> post -> responses -> default",
+          "severity": "MEDIUM",
+          "path": "paths -> /user -> post -> responses -> default",
+          "suggestion": "Add examples for responses."
+        },
+        {
+          "message": "Missing response example at endpoint: paths -> /user/createWithList -> post -> responses -> 200",
+          "severity": "MEDIUM",
+          "path": "paths -> /user/createWithList -> post -> responses -> 200",
+          "suggestion": "Add examples for responses."
+        },
+        {
+          "message": "Missing response example at endpoint: paths -> /user/login -> get -> responses -> 200",
+          "severity": "MEDIUM",
+          "path": "paths -> /user/login -> get -> responses -> 200",
+          "suggestion": "Add examples for responses."
+        },
+        {
+          "message": "Missing response example at endpoint: paths -> /user/{username} -> get -> responses -> 200",
+          "severity": "MEDIUM",
+          "path": "paths -> /user/{username} -> get -> responses -> 200",
+          "suggestion": "Add examples for responses."
+        }
+      ]
+    },
+    {
+      "subscorer": "Security",
+      "score": 8.5,
+      "max_score": 10,
+      "issues": [
+        {
+          "message": "Security scheme 'petstore_auth' is defined, but not referenced",
+          "severity": "HIGH",
+          "path": "components -> securitySchemes -> petstore_auth",
+          "suggestion": "Reference the defined security schemes"
+        },
+        {
+          "message": "Security scheme 'api_key' is defined, but not referenced",
+          "severity": "HIGH",
+          "path": "components -> securitySchemes -> api_key",
+          "suggestion": "Reference the defined security schemes"
+        }
+      ]
+    },
+    {
+      "subscorer": "Miscellaneous Best Practices",
+      "score": 9.5,
+      "max_score": 10,
+      "issues": [
+        {
+          "message": "Paths are not consistently versioned",
+          "severity": "LOW",
+          "path": "N/A",
+          "suggestion": "Add versioned paths to the specification"
+        }
+      ]
+    }
+  ]
+}

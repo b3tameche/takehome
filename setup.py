@@ -6,6 +6,14 @@ setup(
     packages=find_packages(),
     install_requires=[
         "click",
+        "openapi-pydantic",
+        "prance",
+        "openapi-spec-validator",
+        "pydantic",
+        "pytest",
+        "PyYAML",
+        "requests",
+        "setuptools"
     ],
     python_requires=">=3.12",
 )
