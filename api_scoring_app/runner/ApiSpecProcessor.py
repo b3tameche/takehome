@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 
 from api_scoring_app.core.subscorers import ScoringReport
 from api_scoring_app.infra.engine import ScoringEngine
-from api_scoring_app.core import IValidator, IParser
+from api_scoring_app.core import IValidator, IParser, BaseScorer
 from api_scoring_app.core.validator import ValidationException
 from api_scoring_app.infra.validators import PydanticValidator
 from api_scoring_app.infra.parser import Parser
@@ -20,7 +20,7 @@ class APISpecificationProcessor:
     loader_factory: SpecLoaderFactory = field(default_factory=SpecLoaderFactory)
     validator: IValidator = field(default_factory=PydanticValidator)
     parser: IParser = field(default_factory=Parser)
-    scoring_engine: ScoringEngine = field(default_factory=ScoringEngine)
+    scoring_engine: BaseScorer = field(default_factory=ScoringEngine)
 
     def process(self, spec_source: str) -> list[ScoringReport]:
         # 1. load
